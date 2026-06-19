@@ -1,24 +1,27 @@
 .root-theme{
   --primary: #b78cff; /* light purple */
   --accent: #ffb6d9; /* light pink */
-  --muted: #b5d9ff; /* light blue */
+  --muted: #82bfff; /* light blue */
   --card-bg: rgba(183,140,255,0.08);
   --glass: rgba(255,255,255,0.9);
   --text-color: #222222;
-  font-family: 'Baloo 2', sans-serif;
 }
-:root{font-family: 'Poppins', 'Noto Sans TC', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+:root{
+  --root-font: 'Poppins', 'Noto Sans TC', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
 html,body{height:100%;margin:0}
 body{
   background: #ffffff; /* plain white background */
   color: var(--text-color);
   -webkit-font-smoothing:antialiased;
-  font-family: var(--root-font, 'Poppins');
+  font-family: var(--root-font);
 }
 
 /* Headings */
-h1, .page-header h1{font-family: 'Baloo 2', 'Poppins', sans-serif}
-h2, h3{font-family: 'Fredoka One', 'Poppins', sans-serif}
+/* Use the root font stack for both Chinese and English so switching fonts affects both */
+h1, h2, h3, .page-header h1, .page-header .title-left h1, .page-header .title-left h2 {
+  font-family: var(--root-font);
+}
 .bg-art{
   position:fixed;inset:0;z-index:0;pointer-events:none;
   background-image: radial-gradient(circle at 10% 10%, rgba(255,255,255,0.02) 0, transparent 20%),
