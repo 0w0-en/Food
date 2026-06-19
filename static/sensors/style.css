@@ -1,0 +1,19 @@
+:root{
+  --primary:#7c4dff; /* purple */
+  --accent:#ff77b7; /* pink */
+  --muted:#6fb3ff; /* blue */
+  --bg:#fffafa;
+  font-family: 'Baloo 2', sans-serif;
+}
+body{background:linear-gradient(135deg,var(--bg),#fff);color:#222;margin:0}
+.navbar{display:flex;justify-content:space-between;padding:12px 20px;background:linear-gradient(90deg,var(--primary),var(--muted));color:white}
+.navbar a{color:white;text-decoration:none}
+.container{padding:20px;max-width:1000px;margin:20px auto}
+.hero{text-align:center;padding:30px 10px}
+.hero h1{font-size:48px;margin:0;color:var(--primary)}
+.hero h2{font-size:20px;margin-top:8px;color:var(--accent)}
+section{margin:20px 0;padding:12px;background:#fff;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.06)}
+#latest-values{display:flex;gap:10px}
+#latest-values .item{padding:8px 12px;border-radius:6px;background:linear-gradient(90deg,var(--accent),var(--muted));color:white}
+table{width:100%;border-collapse:collapse}
+table th,table td{padding:8px;border-bottom:1px solid #eee}
