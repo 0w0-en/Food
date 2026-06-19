@@ -1,35 +1,42 @@
 {% extends 'sensors/base.html' %}
 {% load static %}
 {% block content %}
-  <section class="hero">
-    <h1>趙翌雯</h1>
-    <h2>B11313121</h2>
-  </section>
-
-  <section class="realtime">
-    <h3>即時數值</h3>
-    <div id="latest-values">
-      Loading...
+  <header class="page-header">
+    <div class="title-left">
+      <h1>趙翌雯</h1>
+      <h2>B11313121</h2>
     </div>
-  </section>
+    <div class="title-right">
+      <p class="subtitle">物聯網個人專題儀表板</p>
+    </div>
+  </header>
 
-  <section class="charts">
-    <h3>歷史折線圖</h3>
-    <select id="sensor-select">
-      <option value="">-- 選擇感測器 --</option>
-      {% for s in sensors %}
-      <option value="{{ s.id }}">{{ s.name|default:s.topic }}</option>
-      {% endfor %}
-    </select>
-    <canvas id="chart" width="800" height="300"></canvas>
-  </section>
+  <section class="panels">
+    <div class="panel realtime">
+      <h3>即時數值</h3>
+      <div id="latest-values">Loading...</div>
+    </div>
 
-  <section class="raw">
-    <h3>原始資料</h3>
-    <table id="raw-table">
-      <thead><tr><th>ID</th><th>Value</th><th>Timestamp</th></tr></thead>
-      <tbody></tbody>
-    </table>
+    <div class="panel charts">
+      <h3>歷史折線圖</h3>
+      <div class="controls">
+        <select id="sensor-select">
+          <option value="">-- 選擇感測器 --</option>
+          {% for s in sensors %}
+          <option value="{{ s.id }}">{{ s.name|default:s.topic }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <canvas id="chart" width="800" height="300"></canvas>
+    </div>
+
+    <div class="panel raw">
+      <h3>原始資料</h3>
+      <table id="raw-table">
+        <thead><tr><th>ID</th><th>Value</th><th>Timestamp</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
   </section>
 
   <script src="/static/sensors/main.js"></script>
