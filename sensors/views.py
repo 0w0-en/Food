@@ -3,6 +3,8 @@ from django.http import JsonResponse
 from .models import Sensor, SensorReading
 from django.core.paginator import Paginator
 from django.views.decorators.http import require_GET
+from django.db import connection
+from django.utils.dateparse import parse_datetime
 
 
 def index(request):
@@ -41,3 +43,24 @@ def api_raw(request):
     p = paginator.get_page(page)
     rows = [{'id': r.id, 'value': r.value, 'timestamp': r.timestamp} for r in p]
     return JsonResponse({'results': rows, 'page': p.number, 'num_pages': paginator.num_pages})
+
+
+@require_GET
+def api_pi_data(request):
+    """Attempt to read latest rows from `iotsixgroup.pi` table via default DB connection.
+    Returns JSON list of rows with id, value, timestamp. If the table/db is not accessible,
+    returns an error message.
+    """
+    try:
+        with connection.cursor() as cur:
+            cur.execute("SELECT id, value, timestamp FROM iotsixgroup.pi ORDER BY id DESC LIMIT 50")
+            cols = [c[0] for c in cur.description]
+            rows = [dict(zip(cols, r)) for r in cur.fetchall()]
+        # normalize timestamps to ISO strings
+        for r in rows:
+            if isinstance(r.get('timestamp'), str):
+                # assume already string
+                pass
+        return JsonResponse({'results': rows})
+    except Exception as e:
+        return JsonResponse({'error': 'Could not read iotsixgroup.pi: %s' % str(e)}, status=500)
