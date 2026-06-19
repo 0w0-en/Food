@@ -19,9 +19,11 @@ body{
 }
 
 /* Headings */
-/* Use the root font stack for both Chinese and English so switching fonts affects both */
+/* Headings: game-like display font with Chinese fallback */
 h1, h2, h3, .page-header h1, .page-header .title-left h1, .page-header .title-left h2 {
-  font-family: var(--root-font);
+  font-family: 'Bungee', 'Press Start 2P', 'Noto Sans TC', var(--root-font);
+  letter-spacing: 0.5px;
+  text-transform: none;
 }
 .bg-art{display:none}
 /* jellyfish SVGs removed */
