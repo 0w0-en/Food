@@ -20,22 +20,7 @@ body{
   background-image: radial-gradient(circle at 10% 10%, rgba(255,255,255,0.02) 0, transparent 20%),
                     radial-gradient(circle at 80% 30%, rgba(255,255,255,0.02) 0, transparent 15%);
 }
-.jellyfish{position:absolute;will-change:transform,opacity;filter:blur(6px) drop-shadow(0 6px 18px rgba(120,80,200,0.12));mix-blend-mode:screen}
-.jellyfish g,path,ellipse{transition:fill 0.3s ease}
-.j1{left:6%;top:8%;width:160px;height:160px;opacity:0.9;animation:floatY 8s ease-in-out infinite, sway 6s ease-in-out infinite;}
-.j2{right:8%;top:18%;width:220px;height:220px;opacity:0.75;animation:floatY 10s ease-in-out infinite, sway 7s ease-in-out infinite;}
-.j3{left:60%;top:6%;width:120px;height:120px;opacity:0.6;animation:floatY 9s ease-in-out infinite, sway 5s ease-in-out infinite;}
-
-@keyframes floatY{
-  0%{transform:translateY(0) translateX(0)}
-  50%{transform:translateY(-28px) translateX(4px)}
-  100%{transform:translateY(0) translateX(0)}
-}
-@keyframes sway{
-  0%{transform:translateX(0) rotate(0deg)}
-  50%{transform:translateX(8px) rotate(1deg)}
-  100%{transform:translateX(0) rotate(0deg)}
-}
+/* jellyfish SVGs removed */
 
 .navbar{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;padding:14px 28px;background:transparent;color:var(--card-bg)}
 .navbar .nav-left{color: #fff;font-weight:600}
