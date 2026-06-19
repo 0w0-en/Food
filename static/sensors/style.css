@@ -20,18 +20,40 @@ body{
   background-image: radial-gradient(circle at 10% 10%, rgba(255,255,255,0.02) 0, transparent 20%),
                     radial-gradient(circle at 80% 30%, rgba(255,255,255,0.02) 0, transparent 15%);
 }
+.jellyfish{position:absolute;will-change:transform,opacity;filter:blur(6px) drop-shadow(0 6px 18px rgba(120,80,200,0.12));mix-blend-mode:screen}
+.jellyfish g,path,ellipse{transition:fill 0.3s ease}
+.j1{left:6%;top:8%;width:160px;height:160px;opacity:0.9;animation:floatY 8s ease-in-out infinite, sway 6s ease-in-out infinite;}
+.j2{right:8%;top:18%;width:220px;height:220px;opacity:0.75;animation:floatY 10s ease-in-out infinite, sway 7s ease-in-out infinite;}
+.j3{left:60%;top:6%;width:120px;height:120px;opacity:0.6;animation:floatY 9s ease-in-out infinite, sway 5s ease-in-out infinite;}
+
+@keyframes floatY{
+  0%{transform:translateY(0) translateX(0)}
+  50%{transform:translateY(-28px) translateX(4px)}
+  100%{transform:translateY(0) translateX(0)}
+}
+@keyframes sway{
+  0%{transform:translateX(0) rotate(0deg)}
+  50%{transform:translateX(8px) rotate(1deg)}
+  100%{transform:translateX(0) rotate(0deg)}
+}
+
 .navbar{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;padding:14px 28px;background:transparent;color:var(--card-bg)}
 .navbar .nav-left{color: #fff;font-weight:600}
 .navbar a{color:#ffd6f0;text-decoration:none}
 .container{position:relative;z-index:2;padding:40px;max-width:1100px;margin:30px auto}
-.hero-card{background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02)); border-radius:20px; padding:28px; box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.03) inset; backdrop-filter: blur(6px);}
+.hero-card{background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.03)); border-radius:20px; padding:28px; box-shadow: 0 12px 36px rgba(0,0,0,0.65), 0 1px 0 rgba(255,255,255,0.03) inset; backdrop-filter: blur(8px);} 
 .page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
 .page-header h1{font-size:44px;margin:0;color:var(--primary)}
 .page-header h2{font-size:18px;margin:4px 0 0;color:#ffd6f0}
 .subtitle{color:#bfc4ff;margin:0}
 
 .panels{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-.panel{padding:18px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 6px 20px rgba(10,6,20,0.6)}
+.panel{padding:18px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));box-shadow:0 6px 20px rgba(10,6,20,0.6)}
+
+/* Make panels lower on page slightly darker to achieve 'lighter at top' feel */
+.panels .panel:nth-child(1){background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));}
+.panels .panel:nth-child(2){background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));}
+.panels .panel:nth-child(3){background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));}
 .panel h3{margin:0 0 10px;color:#e7e4ff}
 
 #latest-values{display:flex;flex-wrap:wrap;gap:10px}
