@@ -116,7 +116,7 @@ h1, h2, h3, .page-header h1, .page-header .title-left h1, .page-header .title-le
 /* 確保所有 panel 寬度都填滿，並將底色改為清爽的淡紫色 */
 .panel {
   width: 100%;
-  max-width: 540px; 
+  max-width: 1000px; 
   margin: 0 auto; 
   padding: 18px;
   border-radius: 14px;
@@ -212,7 +212,7 @@ table tbody tr:hover{
   border-radius: 3px;
 }
 .panel.raw::-webkit-scrollbar-thumb:hover, .panel.pi-data::-webkit-scrollbar-thumb:hover {
-  background: rgba(76, 29, 149, 0.4);
+  background: #f4f0fa;
 }
 
 /* 既然變成 4 列垂直排列，這裡我們可以順便把表格寬度比例調到最完美 */
