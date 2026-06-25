@@ -3,6 +3,9 @@ const sensorSelect = document.getElementById('sensor-select');
 const rawTbody = document.querySelector('#raw-table tbody');
 const piTbody = document.querySelector('#pi-table tbody');
 
+// 👈 核心新增：用來記錄目前網頁畫面上選中的感測器 ID
+let currentSensorId = ''; 
+
 async function fetchLatest(){
   try {
     const r = await fetch('/api/latest/');
@@ -102,28 +105,125 @@ async function fetchPiData(){
   }
 }
 
-let chart=null;
-function renderChart(labels, data){
-  const ctx = document.getElementById('chart').getContext('2d');
-  if(chart) chart.destroy();
-  chart = new Chart(ctx, {
-    type:'line',
-    data:{labels:labels, datasets:[{label:'value',data:data, borderColor:'#7c4dff', backgroundColor:'rgba(124,77,255,0.08)'}]},
-    options:{scales:{x:{display:true}, y:{display:true}}}
+// 儲存所有圖表實例的物件，方便之後更新或銷毀
+let chartInstances = {};
+
+// 1. 負責建立與畫出單張圖表的 function
+function renderSingleChart(containerEl, canvasId, labelName, labels, data) {
+  if (chartInstances[canvasId]) {
+    chartInstances[canvasId].destroy();
+  }
+
+  let canvas = document.getElementById(canvasId);
+  if (!canvas) {
+    canvas = document.createElement('canvas');
+    canvas.id = canvasId;
+    canvas.height = 200; // 設定圖表高度
+    containerEl.appendChild(canvas);
+  }
+
+  const ctx = canvas.getContext('2d');
+  chartInstances[canvasId] = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: labelName,
+        data: data,
+        borderColor: '#7c4dff',
+        backgroundColor: 'rgba(124,77,255,0.08)',
+        borderWidth: 2,
+        tension: 0.2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: { x: { display: true }, y: { display: true } }
+    }
   });
 }
 
+// 2. 負責跑迴圈抓取 3 個或全部 9 個感測器資料並塞進容器的 function
+async function loadMultipleCharts(sensorIds, sensorNames) {
+  const container = document.getElementById('charts-container');
+  if (!container) return;
+  
+  // 如果沒有傳特定的 ID（代表是全部顯示狀態），就自動抓下拉選單前幾個項目
+  if (!sensorIds || sensorIds.length === 0) {
+    const options = Array.from(document.querySelectorAll('#sensor-select option')).filter(opt => opt.value !== "");
+    
+    // 如果折線圖面板目前有限制類別 (limit-view)，就只抓前 3 個；不然就抓全部 9 個
+    const targetOptions = document.getElementById('panel-chart').classList.contains('limit-view') 
+                          ? options.slice(0, 3) 
+                          : options;
+
+    sensorIds = targetOptions.map(opt => opt.value);
+    sensorNames = targetOptions.map(opt => opt.innerText);
+  }
+
+  container.innerHTML = ''; // 清空舊畫布
+
+  for (let i = 0; i < sensorIds.length; i++) {
+    const id = sensorIds[i];
+    const name = sensorNames[i];
+    if (!id) continue;
+
+    try {
+      const r = await fetch(`/api/history/?sensor_id=${id}&limit=50`);
+      const j = await r.json();
+      if (j.error || !j.data) continue;
+
+      const labels = j.data.map(p => new Date(p.timestamp).toLocaleTimeString());
+      const values = j.data.map(p => p.value);
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'chart-wrapper';
+      wrapper.innerHTML = `<h4 style="margin: 5px 0; color: #4c1d95; font-size: 13px;">📊 ${name}</h4>`;
+      container.appendChild(wrapper);
+
+      renderSingleChart(wrapper, `chart-${id}`, '數值', labels, values);
+    } catch (err) {
+      console.error(`無法載入感測器 ${name} 的圖表:`, err);
+    }
+  }
+}
+
+// 修改下拉選單監聽：手動切換時就單獨秀那一個，沒選就恢復多圖表
 sensorSelect.addEventListener('change', (e)=>{
-  fetchHistory(e.target.value);
+  const selectedId = e.target.value;
+  const selectedName = e.target.options[e.target.selectedIndex].text;
+  if (selectedId) {
+    currentSensorId = selectedId;
+    loadMultipleCharts([selectedId], [selectedName]);
+    renderRaw(selectedId);
+  } else {
+    currentSensorId = '';
+    loadMultipleCharts(); 
+  }
 });
 
-// Initial fetch
+// Initial fetch (初始化抓取)
 fetchLatest();
 fetchPiData();
+loadMultipleCharts(); // 👈 換成這行，一進網頁自動秀 3 張圖
 
-// Periodic fetch
+// Periodic fetch (定時自動更新)
 setInterval(fetchLatest, 3000);
 setInterval(fetchPiData, 5000);
+
+// 👈 換成這段定時器：如果沒有手動選單一感測器，每 6 秒在背景自動重抓並刷新多個圖表
+setInterval(() => {
+  if (!currentSensorId) {
+    loadMultipleCharts();
+  } else {
+    // 如果有選單一，就單獨更新那一張
+    const selectedName = sensorSelect.options[sensorSelect.selectedIndex].text;
+    loadMultipleCharts([currentSensorId], [selectedName]);
+    renderRaw(currentSensorId);
+  }
+}, 6000);
+
 
 // ==========================================================================
 // 側邊選單切換與面板單獨顯示控制邏輯
@@ -136,46 +236,42 @@ document.addEventListener('DOMContentLoaded', () => {
   const showAllBtn = document.getElementById('show-all-btn');
   const allPanels = document.querySelectorAll('.panels .panel');
 
-  // 1. 點擊漢堡按鈕 ➔ 打開側邊欄
   if (menuToggle) {
     menuToggle.addEventListener('click', () => {
       sidebar.classList.add('active');
     });
   }
 
-  // 2. 點擊 X 按鈕 ➔ 關閉側邊欄
   if (menuClose) {
     menuClose.addEventListener('click', () => {
       sidebar.classList.remove('active');
     });
   }
 
-  // 3. 點擊選項 ➔ 隱藏其他區塊，且點中的區塊要顯示全部 9 個模組
-menuItems.forEach(item => {
-  item.addEventListener('click', () => {
-    const targetId = item.getAttribute('data-target');
-    
-    allPanels.forEach(panel => {
-      if (panel.id === targetId) {
-        panel.style.display = 'block'; 
-        panel.classList.remove('limit-view'); // 👈 關鍵：單獨顯示時，移除限制，秀出 9 個！
-      } else {
-        panel.style.display = 'none';  
-      }
+  menuItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const targetId = item.getAttribute('data-target');
+      
+      allPanels.forEach(panel => {
+        if (panel.id === targetId) {
+          panel.style.display = 'block'; 
+          panel.classList.remove('limit-view'); 
+        } else {
+          panel.style.display = 'none';  
+        }
+      });
+      
+      sidebar.classList.remove('active'); 
     });
-    
-    sidebar.classList.remove('active'); 
   });
-});
 
-// 4. 點擊選單頂部的「📊 顯示全部」 ➔ 恢復四個全部秀出來，且每個只秀 3 個
-if (showAllBtn) {
-  showAllBtn.addEventListener('click', () => {
-    allPanels.forEach(panel => {
-      panel.style.display = 'block';
-      panel.classList.add('limit-view'); // 👈 關鍵：全部顯示時，重新加上限制，只秀 3 個！
+  if (showAllBtn) {
+    showAllBtn.addEventListener('click', () => {
+      allPanels.forEach(panel => {
+        panel.style.display = 'block';
+        panel.classList.add('limit-view'); 
+      });
+      sidebar.classList.remove('active');
     });
-    sidebar.classList.remove('active');
-  });
-}
+  }
 });
