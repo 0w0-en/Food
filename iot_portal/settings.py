@@ -82,3 +82,22 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MQTT_BROKER = os.getenv('MQTT_BROKER', 'localhost')
 MQTT_PORT = int(os.getenv('MQTT_PORT', '1883'))
 MQTT_TOPICS = os.getenv('MQTT_TOPICS', 'temperature,humidity,illuminance').split(',')
+
+# Silence HTTP request logging in runserver (only show WARNING/ERROR)
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.server': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+    },
+}
+
