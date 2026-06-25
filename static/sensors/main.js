@@ -150,30 +150,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 3. 點擊選項 ➔ 隱藏其他區塊，只留下點選的那個
-  menuItems.forEach(item => {
-    item.addEventListener('click', () => {
-      const targetId = item.getAttribute('data-target');
-      
-      allPanels.forEach(panel => {
-        if (panel.id === targetId) {
-          panel.style.display = 'block'; // 留下來
-        } else {
-          panel.style.display = 'none';  // 隱藏掉
-        }
-      });
-      
-      sidebar.classList.remove('active'); // 選完後自動收回選單
+  // 3. 點擊選項 ➔ 隱藏其他區塊，且點中的區塊要顯示全部 9 個模組
+menuItems.forEach(item => {
+  item.addEventListener('click', () => {
+    const targetId = item.getAttribute('data-target');
+    
+    allPanels.forEach(panel => {
+      if (panel.id === targetId) {
+        panel.style.display = 'block'; 
+        panel.classList.remove('limit-view'); // 👈 關鍵：單獨顯示時，移除限制，秀出 9 個！
+      } else {
+        panel.style.display = 'none';  
+      }
     });
+    
+    sidebar.classList.remove('active'); 
   });
+});
 
-  // 4. 點擊選單頂部的「📊 顯示全部」 ➔ 恢復四個全部秀出來
-  if (showAllBtn) {
-    showAllBtn.addEventListener('click', () => {
-      allPanels.forEach(panel => {
-        panel.style.display = 'block';
-      });
-      sidebar.classList.remove('active');
+// 4. 點擊選單頂部的「📊 顯示全部」 ➔ 恢復四個全部秀出來，且每個只秀 3 個
+if (showAllBtn) {
+  showAllBtn.addEventListener('click', () => {
+    allPanels.forEach(panel => {
+      panel.style.display = 'block';
+      panel.classList.add('limit-view'); // 👈 關鍵：全部顯示時，重新加上限制，只秀 3 個！
     });
-  }
+    sidebar.classList.remove('active');
+  });
+}
 });

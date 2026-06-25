@@ -227,6 +227,25 @@ table tbody tr:hover {
   background: rgba(76, 29, 149, 0.4);
 }
 
+/* ==========================================================================
+   當面板被加上 .limit-view 類別時，只顯示前 3 個項目，其餘隱藏
+   ========================================================================== */
+
+/* 1. 即時數值：只留前 3 個 .item */
+.panel.limit-view #latest-values .item:nth-child(n+4) {
+  display: none !important;
+}
+
+/* 2. 歷史折線圖：下拉選單只留前 4 個 option（包含第一個提示，共3個模組） */
+.panel.limit-view #sensor-select option:nth-child(n+5) {
+  display: none !important;
+}
+
+/* 3. 原始資料與 Pi 資料：表格的 tbody 只留前 3 列 (tr) */
+.panel.limit-view table tbody tr:nth-child(n+4) {
+  display: none !important;
+}
+
 /* 原始資料各欄寬度比例 */
 .panel.raw table th:nth-child(1), .panel.raw table td:nth-child(1) { width: 10%; }
 .panel.raw table th:nth-child(2), .panel.raw table td:nth-child(2) { width: 30%; }
