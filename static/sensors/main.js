@@ -1,7 +1,7 @@
 const latestEl = document.getElementById('latest-values');
 const sensorSelect = document.getElementById('sensor-select');
 const rawTbody = document.querySelector('#raw-table tbody');
-const piTbody = document.querySelector('#pi-table tbody');
+
 
 // 👈 核心新增：用來記錄目前網頁畫面上選中的感測器 ID
 let currentSensorId = ''; 
@@ -72,38 +72,7 @@ async function renderRaw(sensor_id){
   }
 }
 
-async function fetchPiData(){
-  if (!piTbody) return;
-  try {
-    const r = await fetch('/api/pi-data/');
-    const j = await r.json();
-    piTbody.innerHTML = '';
-    
-    if (j.error) {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td colspan="3" style="color: #ef4444; text-align: center; font-weight: 500; padding: 15px;">${j.error}</td>`;
-      piTbody.appendChild(tr);
-      return;
-    }
-    
-    if (!j.results || j.results.length === 0) {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td colspan="3" style="text-align: center; color: #6b7280; padding: 15px;">暫無資料</td>`;
-      piTbody.appendChild(tr);
-      return;
-    }
-    
-    j.results.forEach(row => {
-      const tr = document.createElement('tr');
-      const timeStr = row.timestamp ? row.timestamp : 'N/A';
-      tr.innerHTML = `<td>${row.id}</td><td>${row.value}</td><td>${timeStr}</td>`;
-      piTbody.appendChild(tr);
-    });
-  } catch (err) {
-    console.error('Error fetching Pi data:', err);
-    piTbody.innerHTML = `<tr><td colspan="3" style="color: #ef4444; text-align: center; font-weight: 500; padding: 15px;">無法連線至 API</td></tr>`;
-  }
-}
+
 
 // 儲存所有圖表實例的物件，方便之後更新或銷毀
 let chartInstances = {};
@@ -210,7 +179,6 @@ loadMultipleCharts(); // 👈 換成這行，一進網頁自動秀 3 張圖
 
 // Periodic fetch (定時自動更新)
 setInterval(fetchLatest, 3000);
-setInterval(fetchPiData, 5000);
 
 // 👈 換成這段定時器：如果沒有手動選單一感測器，每 6 秒在背景自動重抓並刷新多個圖表
 setInterval(() => {

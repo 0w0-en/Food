@@ -16,7 +16,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'sensors',
+    'sensors.apps.SensorsConfig',  # 👈 關鍵修改：確保 MQTT 背景監聽會跟著啟動
 ]
 
 MIDDLEWARE = [
