@@ -64,7 +64,7 @@ DATABASES = {
         'PASSWORD': DB_PASSWORD,
         'HOST': DB_HOST,
         'PORT': DB_PORT,
-    }
+    },
     'iotsixgroup_db': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'iotsixgroup',             # 固定的資料庫名稱

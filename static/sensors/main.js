@@ -92,7 +92,7 @@ async function fetchPiData(){
     
     j.results.forEach(row => {
       const tr = document.createElement('tr');
-      const timeStr = row.timestamp ? new Date(row.timestamp).toLocaleString() : 'N/A';
+      const timeStr = row.timestamp ? row.timestamp : 'N/A';
       tr.innerHTML = `<td>${row.id}</td><td>${row.value}</td><td>${timeStr}</td>`;
       piTbody.appendChild(tr);
     });
