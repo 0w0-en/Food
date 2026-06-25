@@ -49,13 +49,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'iot_portal.wsgi.application'
 
-DB_ENGINE = os.getenv('DB_ENGINE', 'django.db.backends.mysql')
-DB_NAME = os.getenv('DB_NAME', 'iot_wenweb_db')
-DB_USER = os.getenv('DB_USER', 'root')
-DB_PASSWORD = os.getenv('DB_PASSWORD', '')
-DB_HOST = os.getenv('DB_HOST', '100.97.224.8')
-DB_PORT = os.getenv('DB_PORT', '3306')
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -63,7 +56,7 @@ DATABASES = {
         'USER': 'root',                   # 延用你原本的環境變數帳號 (root)
         'PASSWORD': 'root123456',           # 延用你原本的環境變數密碼
         'HOST': '127.0.0.1',                   # 延用主機 IP
-        'PORT': '3306',                   # 延用 3306 埠口
+        'PORT': '3307',                   # 延用 3306 埠口
     }
 }
 
