@@ -41,10 +41,16 @@ h1, h2, h3, .page-header h1, .page-header .title-left h1, .page-header .title-le
   color:var(--text-color);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* 加上淡淡的陰影增加層次感 */
 }
-.navbar .nav-left{color: var(--header-text);font-weight:700}
+/* 確保左側「實境解謎裝置」標題與漢堡按鈕文字通通是純白色 */
+.navbar .nav-left {
+  color: #ffffff !important; /* 👈 新增 !important 確保強制覆蓋所有預設深色 */
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+}
 /* 右側「組別總網站」按鈕樣式 */
 .navbar a {
-  color: #000000; 
+  color: #ffffff; 
   text-decoration: none;
   font-weight: 500;
   
@@ -107,15 +113,29 @@ h1, h2, h3, .page-header h1, .page-header .title-left h1, .page-header .title-le
   grid-template-columns: 1fr; /* 👈 關鍵：強制每一列只有 1 個欄位 */
   gap: 20px; /* 區塊與區塊之間的上下間距 */
 }
-/* 確保所有 panel 寬度都填滿 */
+/* 確保所有 panel 寬度都填滿，並將底色改為清爽的淡紫色 */
 .panel {
   width: 100%;
+  max-width: 540px; 
+  margin: 0 auto; 
   padding: 18px;
   border-radius: 14px;
-  background: linear-gradient(180deg, rgba(250,250,255,0.0), rgba(255,255,255,0.98));
-  box-shadow: 0 6px 18px rgba(30,20,60,0.04);
-  border: 1px solid rgba(107,63,181,0.04);
-  box-sizing: border-box; /* 防止 padding 撐開寬度 */
+  
+  /* 👈 關鍵修改：改為浪漫質感的淡紫色底色（也可以用 #f3e8ff，這裡選用微調的優雅淡紫） */
+  background: #f4f0fa; 
+  
+  /* 稍微加深一點點邊框與陰影，讓淡紫色面板在白底上更立體 */
+  box-shadow: 0 6px 20px rgba(76, 29, 149, 0.05);
+  border: 1px solid rgba(76, 29, 149, 0.08);
+  
+  box-sizing: border-box; 
+}
+
+/* 如果有需要，也可以順便讓歷史折線圖底下的畫布背景保持透明，完美融合淡紫底 */
+.charts canvas {
+  position: relative;
+  z-index: 2;
+  background: transparent;
 }
 
 /* Make panels lower on page slightly darker to achieve 'lighter at top' feel */
@@ -208,19 +228,7 @@ table tbody tr:hover{
 .panel.pi-data table th:nth-child(3), .panel.pi-data table td:nth-child(3) { width: 45%; } /* timestamp */
 
 
-/* 這裡我們可以用 minmax 或 fr 來精準分配，讓原始資料佔 2份，Pi資料佔 3份 */
-@media (min-width: 901px) {
-  .panels {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* 保持上方兩個面板 1:1 */
-    gap: 18px;
-  }
-  
-  /* 專屬針對下方兩個資料面板做 2:3 比例調配 */
-  .panel.raw {
-    grid-column: span 1; /* 如果原本是一半就維持 */
-  }
-}
+
 
 /* ==========================================================================
    側邊漢堡選單樣式 
