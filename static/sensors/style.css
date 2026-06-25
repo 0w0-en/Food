@@ -113,52 +113,59 @@ h1, h2, h3, .page-header h1, .page-header .title-left h1, .page-header .title-le
   grid-template-columns: 1fr; /* 👈 關鍵：強制每一列只有 1 個欄位 */
   gap: 20px; /* 區塊與區塊之間的上下間距 */
 }
-/* 確保所有 panel 寬度都填滿，並將底色改為清爽的淡紫色 */
+/* ==========================================================================
+   數據面板基礎設定
+   ========================================================================== */
 .panel {
   width: 100%;
-  max-width: 1000px; 
+  max-width: 540px; /* 👈 如果你要維持先前說的並排適中寬度，用 540px；如果是滿版用 1000px */
   margin: 0 auto; 
   padding: 18px;
   border-radius: 14px;
-  
-  /* 👈 關鍵修改：改為浪漫質感的淡紫色底色（也可以用 #f3e8ff，這裡選用微調的優雅淡紫） */
-  background: #e8d8ff; 
-  
-  /* 稍微加深一點點邊框與陰影，讓淡紫色面板在白底上更立體 */
+  background: #e8d8ff; /* 👈 統一亮嫩紫色 */
   box-shadow: 0 6px 20px rgba(76, 29, 149, 0.05);
   border: 1px solid rgba(76, 29, 149, 0.08);
-  
   box-sizing: border-box; 
 }
 
-/* 如果有需要，也可以順便讓歷史折線圖底下的畫布背景保持透明，完美融合淡紫底 */
+/* 註：原本這裡有 .panels .panel:nth-child(1)~(3) 的漸層底色已被刪除，避免覆蓋紫色 */
+
+.panel h3 {
+  margin: 0 0 10px;
+  color: #000000;
+}
+
+/* 即時數值標籤 */
+#latest-values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+#latest-values .item {
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, var(--muted), var(--primary));
+  color: #fff;
+  font-weight: 600;
+}
+
+/* 歷史折線圖選單與畫布 */
+select#sensor-select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.06);
+  background: #fff;
+  color: var(--text-color);
+}
 .charts canvas {
   position: relative;
   z-index: 2;
   background: transparent;
 }
 
-/* Make panels lower on page slightly darker to achieve 'lighter at top' feel */
-.panels .panel:nth-child(1){background:linear-gradient(180deg, rgba(255,250,255,0.02), rgba(255,255,255,0.98));}
-.panels .panel:nth-child(2){background:linear-gradient(180deg, rgba(245,250,255,0.02), rgba(255,255,255,0.98));}
-.panels .panel:nth-child(3){background:linear-gradient(180deg, rgba(250,250,240,0.02), rgba(255,255,255,0.98));}
-.panel h3{margin:0 0 10px;color:#000000}
-
-#latest-values{display:flex;flex-wrap:wrap;gap:10px}
-/* 數值標籤：順序更換為 var(--muted) 到 var(--primary)，實現「藍到紫」的深色漸層 */
-#latest-values .item{
-  padding:10px 14px;
-  border-radius:10px;
-  background: linear-gradient(90deg, var(--muted), var(--primary));
-  color:#fff;
-  font-weight:600;
-}
-
-/* Make chart canvas sit above panel background */
-.charts canvas{position:relative;z-index:2;background:transparent}
-
-select#sensor-select{padding:8px 10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:#fff;color:var(--text-color)}
-
+/* ==========================================================================
+   表格通用佈局設定（防止文字爆開、水平捲軸）
+   ========================================================================== */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -169,7 +176,6 @@ table {
 }
 table th, table td {
   padding: 10px 8px;
-  /* 👈 新增這行：當文字太長時自動換行，文字就不會把表格往外撐開 */
   word-wrap: break-word;
   word-break: break-all;
 }
@@ -182,36 +188,23 @@ table th {
 table td {
   border-bottom: 1px solid rgba(0,0,0,0.04);
 }
-/* 👈 額外建議：因為設定了固定佈局，我們可以手動分配欄位寬度比例 */
-/* 讓 ID 欄窄一點，留更多空間給 Value 和 Timestamp */
-table th:nth-child(1), table td:nth-child(1) { width: 15%; }
-table th:nth-child(2), table td:nth-child(2) { width: 35%; }
-table th:nth-child(3), table td:nth-child(3) { width: 50%; }
-
-table tbody tr{
+table tbody tr {
   transition: background-color 0.2s ease;
 }
-table tbody tr:hover{
+table tbody tr:hover {
   background-color: rgba(29, 78, 216, 0.03);
 }
 
-/* 確保 Pi 資料面板也套用一模一樣的淡紫色底圖 */
-.panel.pi-data {
-  background: #e8d8ff; 
-  box-shadow: 0 6px 20px rgba(76, 29, 149, 0.05);
-  border: 1px solid rgba(76, 29, 149, 0.08);
-  
-  /* 原本的上下滾動限制維持保留 */
-  max-height: 400px;
-  overflow-y: auto;
-}
-
+/* ==========================================================================
+   原始資料與 Pi 資料面板專屬設定（滾動條與欄寬）
+   ========================================================================== */
 .panel.raw, .panel.pi-data {
+  background: #e8d8ff; /* 確保兩個資料底色都是純嫩紫 */
   max-height: 400px;
   overflow-y: auto;
 }
 
-/* Scrollbar styles for dashboard panels */
+/* 滾動條樣式微調 */
 .panel.raw::-webkit-scrollbar, .panel.pi-data::-webkit-scrollbar {
   width: 6px;
 }
@@ -226,18 +219,16 @@ table tbody tr:hover{
   background: rgba(76, 29, 149, 0.4);
 }
 
-/* 既然變成 4 列垂直排列，這裡我們可以順便把表格寬度比例調到最完美 */
 /* 原始資料各欄寬度比例 */
-.panel.raw table th:nth-child(1), .panel.raw table td:nth-child(1) { width: 10%; } /* id */
-.panel.raw table th:nth-child(2), .panel.raw table td:nth-child(2) { width: 30%; } /* topic */
-.panel.raw table th:nth-child(3), .panel.raw table td:nth-child(3) { width: 20%; } /* value */
-.panel.raw table th:nth-child(4), .panel.raw table td:nth-child(4) { width: 40%; } /* timestamp */
+.panel.raw table th:nth-child(1), .panel.raw table td:nth-child(1) { width: 10%; }
+.panel.raw table th:nth-child(2), .panel.raw table td:nth-child(2) { width: 30%; }
+.panel.raw table th:nth-child(3), .panel.raw table td:nth-child(3) { width: 20%; }
+.panel.raw table th:nth-child(4), .panel.raw table td:nth-child(4) { width: 40%; }
 
 /* Pi 資料各欄寬度比例 */
-.panel.pi-data table th:nth-child(1), .panel.pi-data table td:nth-child(1) { width: 10%; } /* id */
-.panel.pi-data table th:nth-child(2), .panel.pi-data table td:nth-child(2) { width: 45%; } /* event_type */
-.panel.pi-data table th:nth-child(3), .panel.pi-data table td:nth-child(3) { width: 45%; } /* timestamp */
-
+.panel.pi-data table th:nth-child(1), .panel.pi-data table td:nth-child(1) { width: 10%; }
+.panel.pi-data table th:nth-child(2), .panel.pi-data table td:nth-child(2) { width: 45%; }
+.panel.pi-data table th:nth-child(3), .panel.pi-data table td:nth-child(3) { width: 45%; }
 
 
 
