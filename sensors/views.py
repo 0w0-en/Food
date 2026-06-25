@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
-from .models import Sensor, SensorReading
+from .models import Sensor, SensorReading, PiData
 from django.core.paginator import Paginator
 from django.views.decorators.http import require_GET
 from django.db import connection
@@ -56,20 +56,23 @@ def api_raw(request):
 
 @require_GET
 def api_pi_data(request):
-    """Attempt to read latest rows from `iotsixgroup.pi` table via default DB connection.
-    Returns JSON list of rows with id, value, timestamp. If the table/db is not accessible,
-    returns an error message.
+    """
+    透過 iotsixgroup_db 讀取 phpMyAdmin 裡面的 pi 歷史資料
     """
     try:
-        with connection.cursor() as cur:
-            cur.execute("SELECT id, value, timestamp FROM iotsixgroup.pi ORDER BY id DESC LIMIT 50")
-            cols = [c[0] for c in cur.description]
-            rows = [dict(zip(cols, r)) for r in cur.fetchall()]
-        # normalize timestamps to ISO strings
-        for r in rows:
-            if isinstance(r.get('timestamp'), str):
-                # assume already string
-                pass
+        # 1. 使用 .using() 指定去連 iotsixgroup_db，抓最新 50 筆
+        qs = PiData.objects.using('iotsixgroup_db').order_by('-id')[:50]
+        
+        # 2. 轉換成前端 JS 好讀的 JSON 格式
+        rows = []
+        for item in qs:
+            rows.append({
+                'id': item.id,
+                'value': item.value,
+                # 將 Datetime 轉成漂亮的時間字串，避免 JavaScript 解析失敗
+                'timestamp': item.timestamp.strftime('%Y-%m-%d %H:%M:%S') if item.timestamp else ''
+            })
+            
         return JsonResponse({'results': rows})
     except Exception as e:
         return JsonResponse({'error': 'Could not read iotsixgroup.pi: %s' % str(e)}, status=500)

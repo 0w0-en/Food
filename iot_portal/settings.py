@@ -65,6 +65,14 @@ DATABASES = {
         'HOST': DB_HOST,
         'PORT': DB_PORT,
     }
+    'iotsixgroup_db': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'iotsixgroup',             # 固定的資料庫名稱
+        'USER': DB_USER,                   # 共用你的 root 帳號
+        'PASSWORD': DB_PASSWORD,           # 共用你的密碼
+        'HOST': DB_HOST,                   # 共用相同主機 IP
+        'PORT': DB_PORT,                   # 共用 3306 埠口
+    }
 }
 
 AUTH_PASSWORD_VALIDATORS = []
@@ -101,7 +109,6 @@ LOGGING = {
     },
 }
 
-import logging
-logging.getLogger('django.server').setLevel(logging.WARNING)
+
 
 
