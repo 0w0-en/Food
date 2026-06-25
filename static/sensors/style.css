@@ -42,19 +42,38 @@ h1, h2, h3, .page-header h1, .page-header .title-left h1, .page-header .title-le
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* 加上淡淡的陰影增加層次感 */
 }
 .navbar .nav-left{color: var(--header-text);font-weight:700}
-.navbar a{color:var(--header-text);text-decoration:none}
-/* 滑鼠移到右側按鈕時，稍微變透明一點點，做出點擊回饋感 */
-.navbar a:hover {opacity: 0.85;}
+/* 右側「組別總網站」按鈕樣式 */
+.navbar a {
+  color: #ffffff; 
+  text-decoration: none;
+  font-weight: 500;
+  
+  /* 👈 新增：加上按鈕內襯與圓角 */
+  padding: 6px 14px;
+  border-radius: 8px;
+  
+  /* 👈 新增：初始狀態為 50% 透明度的白色底圖 */
+  background-color: rgba(255, 255, 255, 0.5); 
+  
+  /* 👈 新增：讓顏色、透明度、縮放轉場時有流暢的動畫效果 */
+  transition: background-color 0.15s ease, transform 0.1s ease; 
+}
+/* 👈 當滑鼠移到按鈕上（選到時），底圖白色透明度調降至 30% */
+.navbar a:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  opacity: 1; /* 取代原本舊有的 opacity 調整 */
+}
+/* 👈 額外加碼：真正滑鼠「按下去」那一瞬間的微幅下壓回饋（更像按鈕） */
+.navbar a:active {
+  transform: scale(0.95);
+  background-color: rgba(255, 255, 255, 0.2); /* 按下去時稍微再暗一點 */
+}
 
 .container{position:relative;z-index:2;padding:40px;max-width:1100px;margin:30px auto}
 
 /* 這裡幫你把大卡片（名字區塊）改為白色 */
 .hero-card {
   background: #ffffff; /* 改為純白底 */
-  border-radius: 20px; 
-  padding: 28px; 
-  box-shadow: 0 6px 18px rgba(30, 20, 60, 0.04); /* 調整為淡淡的陰影 */
-  border: 1px solid rgba(107, 63, 181, 0.08);
   position: relative;
   overflow: hidden;
 }
@@ -112,8 +131,6 @@ table {
   color: var(--text-color);
   font-size: 14px;
   text-align: left;
-  
-  /* 👈 新增這行：強制表格大小鎖定在面板內，不超出範圍 */
   table-layout: fixed; 
 }
 table th, table td {
@@ -164,8 +181,28 @@ table tbody tr:hover{
   background: rgba(76, 29, 149, 0.4);
 }
 
-/* responsive */
-@media (max-width:900px){
-  .panels{grid-template-columns:1fr}
-  .page-header{flex-direction:column;align-items:flex-start;gap:6px}
+/* 2. 調整「原始資料」表格的各欄位比例：id, topic, value, timestamp */
+.panel.raw table th:nth-child(1), .panel.raw table td:nth-child(1) { width: 12%; } /* id */
+.panel.raw table th:nth-child(2), .panel.raw table td:nth-child(2) { width: 28%; } /* topic */
+.panel.raw table th:nth-child(3), .panel.raw table td:nth-child(3) { width: 20%; } /* value */
+.panel.raw table th:nth-child(4), .panel.raw table td:nth-child(4) { width: 40%; } /* timestamp */
+
+/* 3. 調整「Pi 資料」表格的各欄位比例：id, event_type, timestamp */
+.panel.pi-data table th:nth-child(1), .panel.pi-data table td:nth-child(1) { width: 15%; } /* id */
+.panel.pi-data table th:nth-child(2), .panel.pi-data table td:nth-child(2) { width: 35%; } /* event_type */
+.panel.pi-data table th:nth-child(3), .panel.pi-data table td:nth-child(3) { width: 50%; } /* timestamp */
+
+
+/* 這裡我們可以用 minmax 或 fr 來精準分配，讓原始資料佔 2份，Pi資料佔 3份 */
+@media (min-width: 901px) {
+  .panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 保持上方兩個面板 1:1 */
+    gap: 18px;
+  }
+  
+  /* 專屬針對下方兩個資料面板做 2:3 比例調配 */
+  .panel.raw {
+    grid-column: span 1; /* 如果原本是一半就維持 */
+  }
 }
