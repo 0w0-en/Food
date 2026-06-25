@@ -60,10 +60,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'iot_wenweb_db',           # 👈 關鍵：直接指定你截圖中看到的那個資料庫名稱！
-        'USER': DB_USER,                   # 延用你原本的環境變數帳號 (root)
-        'PASSWORD': DB_PASSWORD,           # 延用你原本的環境變數密碼
-        'HOST': DB_HOST,                   # 延用主機 IP
-        'PORT': DB_PORT,                   # 延用 3306 埠口
+        'USER': 'root',                   # 延用你原本的環境變數帳號 (root)
+        'PASSWORD': 'root123456',           # 延用你原本的環境變數密碼
+        'HOST': '127.0.0.1',                   # 延用主機 IP
+        'PORT': '3306',                   # 延用 3306 埠口
     }
 }
 
