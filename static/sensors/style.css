@@ -122,7 +122,7 @@ h1, h2, h3, .page-header h1, .page-header .title-left h1, .page-header .title-le
   border-radius: 14px;
   
   /* 👈 關鍵修改：改為浪漫質感的淡紫色底色（也可以用 #f3e8ff，這裡選用微調的優雅淡紫） */
-  background: #f4f0fa; 
+  background: #e8d8ff; 
   
   /* 稍微加深一點點邊框與陰影，讓淡紫色面板在白底上更立體 */
   box-shadow: 0 6px 20px rgba(76, 29, 149, 0.05);
@@ -195,6 +195,17 @@ table tbody tr:hover{
   background-color: rgba(29, 78, 216, 0.03);
 }
 
+/* 確保 Pi 資料面板也套用一模一樣的淡紫色底圖 */
+.panel.pi-data {
+  background: #e8d8ff; 
+  box-shadow: 0 6px 20px rgba(76, 29, 149, 0.05);
+  border: 1px solid rgba(76, 29, 149, 0.08);
+  
+  /* 原本的上下滾動限制維持保留 */
+  max-height: 400px;
+  overflow-y: auto;
+}
+
 .panel.raw, .panel.pi-data {
   max-height: 400px;
   overflow-y: auto;
@@ -212,7 +223,7 @@ table tbody tr:hover{
   border-radius: 3px;
 }
 .panel.raw::-webkit-scrollbar-thumb:hover, .panel.pi-data::-webkit-scrollbar-thumb:hover {
-  background: #f4f0fa;
+  background: rgba(76, 29, 149, 0.4);
 }
 
 /* 既然變成 4 列垂直排列，這裡我們可以順便把表格寬度比例調到最完美 */
