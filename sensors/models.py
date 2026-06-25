@@ -25,7 +25,7 @@ class SensorReading(models.Model):
 class PiData(models.Model):
     # 請根據你 phpMyAdmin 裡 pi 資料表的實際欄位名稱調整 db_column
     id = models.AutoField(primary_key=True, db_column='id') 
-    value = models.FloatField(db_column='value')           
+    value = models.CharField(max_length=255, db_column='event_type')      
     timestamp = models.DateTimeField(db_column='timestamp') 
 
     class Meta:
