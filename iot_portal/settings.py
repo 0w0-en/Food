@@ -58,20 +58,12 @@ DB_PORT = os.getenv('DB_PORT', '3306')
 
 DATABASES = {
     'default': {
-        'ENGINE': DB_ENGINE,
-        'NAME': DB_NAME,
-        'USER': DB_USER,
-        'PASSWORD': DB_PASSWORD,
-        'HOST': DB_HOST,
-        'PORT': DB_PORT,
-    },
-    'iotsixgroup_db': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'iotsixgroup',             # 固定的資料庫名稱
-        'USER': DB_USER,                   # 共用你的 root 帳號
-        'PASSWORD': DB_PASSWORD,           # 共用你的密碼
-        'HOST': DB_HOST,                   # 共用相同主機 IP
-        'PORT': DB_PORT,                   # 共用 3306 埠口
+        'NAME': 'iot_wenweb_db',           # 👈 關鍵：直接指定你截圖中看到的那個資料庫名稱！
+        'USER': DB_USER,                   # 延用你原本的環境變數帳號 (root)
+        'PASSWORD': DB_PASSWORD,           # 延用你原本的環境變數密碼
+        'HOST': DB_HOST,                   # 延用主機 IP
+        'PORT': DB_PORT,                   # 延用 3306 埠口
     }
 }
 
@@ -87,9 +79,11 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # MQTT settings
-MQTT_BROKER = os.getenv('MQTT_BROKER', 'localhost')
-MQTT_PORT = int(os.getenv('MQTT_PORT', '1883'))
-MQTT_TOPICS = os.getenv('MQTT_TOPICS', 'temperature,humidity,illuminance').split(',')
+MQTT_BROKER = '127.0.0.1'
+MQTT_PORT = 1883
+
+# 👈 填入你那 3 個模組在硬體發射端設定的主題名稱
+MQTT_TOPICS = ["escaperoom/pico/sensors"]
 
 # Silence HTTP request logging in runserver (only show WARNING/ERROR)
 LOGGING = {
