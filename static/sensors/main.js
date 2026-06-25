@@ -125,3 +125,55 @@ fetchPiData();
 setInterval(fetchLatest, 3000);
 setInterval(fetchPiData, 5000);
 
+// ==========================================================================
+// 側邊選單切換與面板單獨顯示控制邏輯
+// ==========================================================================
+document.addEventListener('DOMContentLoaded', () => {
+  const sidebar = document.getElementById('sidebar');
+  const menuToggle = document.getElementById('menu-toggle');
+  const menuClose = document.getElementById('menu-close');
+  const menuItems = document.querySelectorAll('.sidebar-menu li');
+  const showAllBtn = document.getElementById('show-all-btn');
+  const allPanels = document.querySelectorAll('.panels .panel');
+
+  // 1. 點擊漢堡按鈕 ➔ 打開側邊欄
+  if (menuToggle) {
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.add('active');
+    });
+  }
+
+  // 2. 點擊 X 按鈕 ➔ 關閉側邊欄
+  if (menuClose) {
+    menuClose.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+    });
+  }
+
+  // 3. 點擊選項 ➔ 隱藏其他區塊，只留下點選的那個
+  menuItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const targetId = item.getAttribute('data-target');
+      
+      allPanels.forEach(panel => {
+        if (panel.id === targetId) {
+          panel.style.display = 'block'; // 留下來
+        } else {
+          panel.style.display = 'none';  // 隱藏掉
+        }
+      });
+      
+      sidebar.classList.remove('active'); // 選完後自動收回選單
+    });
+  });
+
+  // 4. 點擊選單頂部的「📊 顯示全部」 ➔ 恢復四個全部秀出來
+  if (showAllBtn) {
+    showAllBtn.addEventListener('click', () => {
+      allPanels.forEach(panel => {
+        panel.style.display = 'block';
+      });
+      sidebar.classList.remove('active');
+    });
+  }
+});

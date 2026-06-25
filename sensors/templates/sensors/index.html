@@ -12,12 +12,14 @@
   </header>
 
   <section class="panels">
-    <div class="panel realtime">
+    <!-- 1. 👈 加上 id="panel-latest" -->
+    <div class="panel realtime" id="panel-latest">
       <h3>即時數值</h3>
       <div id="latest-values">Loading...</div>
     </div>
 
-    <div class="panel charts">
+    <!-- 2. 👈 加上 id="panel-chart" -->
+    <div class="panel charts" id="panel-chart">
       <h3>歷史折線圖</h3>
       <div class="controls">
         <select id="sensor-select">
@@ -30,7 +32,8 @@
       <canvas id="chart" width="800" height="300"></canvas>
     </div>
 
-    <div class="panel raw">
+    <!-- 3. 👈 加上 id="panel-raw" -->
+    <div class="panel raw" id="panel-raw">
       <h3>原始資料</h3>
       <table id="raw-table">
         <thead><tr><th>ID</th><th>Topic</th><th>Value</th><th>Timestamp</th></tr></thead>
@@ -38,7 +41,8 @@
       </table>
     </div>
 
-    <div class="panel pi-data">
+    <!-- 4. 👈 加上 id="panel-pi" -->
+    <div class="panel pi-data" id="panel-pi">
       <h3>Pi 資料（iotsixgroup.pi）</h3>
       <table id="pi-table">
         <thead><tr><th>ID</th><th>event_type</th><th>Timestamp</th></tr></thead>

@@ -44,7 +44,7 @@ h1, h2, h3, .page-header h1, .page-header .title-left h1, .page-header .title-le
 .navbar .nav-left{color: var(--header-text);font-weight:700}
 /* 右側「組別總網站」按鈕樣式 */
 .navbar a {
-  color: #ffffff; 
+  color: #000000; 
   text-decoration: none;
   font-weight: 500;
   
@@ -52,21 +52,21 @@ h1, h2, h3, .page-header h1, .page-header .title-left h1, .page-header .title-le
   padding: 6px 14px;
   border-radius: 8px;
   
-  /* 👈 新增：初始狀態為 50% 透明度的白色底圖 */
-  background-color: rgba(255, 255, 255, 0.5); 
+  /* 👈 新增：初始狀態為 30% 透明度的白色底圖 */
+  background-color: rgba(255, 255, 255, 0.3); 
   
   /* 👈 新增：讓顏色、透明度、縮放轉場時有流暢的動畫效果 */
   transition: background-color 0.15s ease, transform 0.1s ease; 
 }
-/* 👈 當滑鼠移到按鈕上（選到時），底圖白色透明度調降至 30% */
+/* 👈 當滑鼠移到按鈕上（選到時），底圖白色透明度調降至 50% */
 .navbar a:hover {
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.5);
   opacity: 1; /* 取代原本舊有的 opacity 調整 */
 }
 /* 👈 額外加碼：真正滑鼠「按下去」那一瞬間的微幅下壓回饋（更像按鈕） */
 .navbar a:active {
   transform: scale(0.95);
-  background-color: rgba(255, 255, 255, 0.2); /* 按下去時稍微再暗一點 */
+  background-color: rgba(255, 255, 255, 0.8); /* 按下去時稍微再暗一點 */
 }
 
 .container{position:relative;z-index:2;padding:40px;max-width:1100px;margin:30px auto}
@@ -101,8 +101,22 @@ h1, h2, h3, .page-header h1, .page-header .title-left h1, .page-header .title-le
 }
 .subtitle{color:var(--text-color);margin:0}
 
-.panels{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-.panel{padding:18px;border-radius:14px;background:linear-gradient(180deg, rgba(250,250,255,0.0), rgba(255,255,255,0.98));box-shadow:0 6px 18px rgba(30,20,60,0.04);border:1px solid rgba(107,63,181,0.04)}
+/* 將原本的網格佈局改為單欄，四個區塊就會自動變成 4 列垂直排列 */
+.panels {
+  display: grid;
+  grid-template-columns: 1fr; /* 👈 關鍵：強制每一列只有 1 個欄位 */
+  gap: 20px; /* 區塊與區塊之間的上下間距 */
+}
+/* 確保所有 panel 寬度都填滿 */
+.panel {
+  width: 100%;
+  padding: 18px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(250,250,255,0.0), rgba(255,255,255,0.98));
+  box-shadow: 0 6px 18px rgba(30,20,60,0.04);
+  border: 1px solid rgba(107,63,181,0.04);
+  box-sizing: border-box; /* 防止 padding 撐開寬度 */
+}
 
 /* Make panels lower on page slightly darker to achieve 'lighter at top' feel */
 .panels .panel:nth-child(1){background:linear-gradient(180deg, rgba(255,250,255,0.02), rgba(255,255,255,0.98));}
@@ -181,16 +195,17 @@ table tbody tr:hover{
   background: rgba(76, 29, 149, 0.4);
 }
 
-/* 2. 調整「原始資料」表格的各欄位比例：id, topic, value, timestamp */
-.panel.raw table th:nth-child(1), .panel.raw table td:nth-child(1) { width: 12%; } /* id */
-.panel.raw table th:nth-child(2), .panel.raw table td:nth-child(2) { width: 28%; } /* topic */
+/* 既然變成 4 列垂直排列，這裡我們可以順便把表格寬度比例調到最完美 */
+/* 原始資料各欄寬度比例 */
+.panel.raw table th:nth-child(1), .panel.raw table td:nth-child(1) { width: 10%; } /* id */
+.panel.raw table th:nth-child(2), .panel.raw table td:nth-child(2) { width: 30%; } /* topic */
 .panel.raw table th:nth-child(3), .panel.raw table td:nth-child(3) { width: 20%; } /* value */
 .panel.raw table th:nth-child(4), .panel.raw table td:nth-child(4) { width: 40%; } /* timestamp */
 
-/* 3. 調整「Pi 資料」表格的各欄位比例：id, event_type, timestamp */
-.panel.pi-data table th:nth-child(1), .panel.pi-data table td:nth-child(1) { width: 15%; } /* id */
-.panel.pi-data table th:nth-child(2), .panel.pi-data table td:nth-child(2) { width: 35%; } /* event_type */
-.panel.pi-data table th:nth-child(3), .panel.pi-data table td:nth-child(3) { width: 50%; } /* timestamp */
+/* Pi 資料各欄寬度比例 */
+.panel.pi-data table th:nth-child(1), .panel.pi-data table td:nth-child(1) { width: 10%; } /* id */
+.panel.pi-data table th:nth-child(2), .panel.pi-data table td:nth-child(2) { width: 45%; } /* event_type */
+.panel.pi-data table th:nth-child(3), .panel.pi-data table td:nth-child(3) { width: 45%; } /* timestamp */
 
 
 /* 這裡我們可以用 minmax 或 fr 來精準分配，讓原始資料佔 2份，Pi資料佔 3份 */
@@ -205,4 +220,99 @@ table tbody tr:hover{
   .panel.raw {
     grid-column: span 1; /* 如果原本是一半就維持 */
   }
+}
+
+/* ==========================================================================
+   側邊漢堡選單樣式 
+   ========================================================================== */
+
+/* 漢堡按鈕：放在導覽列左側 */
+.menu-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+  margin-right: 14px;
+  padding: 0;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+.menu-btn:hover {
+  transform: scale(1.1);
+}
+
+/* 側邊選單主體（平時隱藏在螢幕左邊外面） */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -280px; /* 寬度 250px + 陰影空間 */
+  width: 250px;
+  height: 100%;
+  background: #ffffff;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08);
+  z-index: 9999; /* 確保浮在網頁最上層 */
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 24px 20px;
+  box-sizing: border-box;
+}
+
+/* 當啟用側邊欄時，滑動到 left: 0 顯示出來 */
+.sidebar.active {
+  left: 0;
+}
+
+/* 側邊選單標頭區塊 */
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding-bottom: 14px;
+  margin-bottom: 20px;
+}
+.sidebar-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: var(--header-text);
+  transition: opacity 0.2s ease;
+}
+.sidebar-header h3:hover {
+  opacity: 0.7;
+}
+
+/* 關閉按鈕 (X) */
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 26px;
+  cursor: pointer;
+  color: #9ca3af;
+  line-height: 1;
+  padding: 0;
+}
+.close-btn:hover {
+  color: #4b5563;
+}
+
+/* 選項清單 */
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sidebar-menu li {
+  padding: 12px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 15px;
+  color: var(--text-color);
+  margin-bottom: 4px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+/* 滑鼠移上去的亮起回饋 */
+.sidebar-menu li:hover {
+  background-color: rgba(76, 29, 149, 0.05);
+  color: var(--primary);
 }
