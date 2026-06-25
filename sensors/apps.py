@@ -27,20 +27,20 @@ class SensorsConfig(AppConfig):
 
         # apps.py -> 修改 on_message 函式
         def on_message(client, userdata, msg):
-        try:
-            # 直接讀取 payload 字串
-            payload = msg.payload.decode()
+            try:
+                # 直接讀取 payload 字串
+                payload = msg.payload.decode()
         
-            close_old_connections()
-            # 建立感測器記錄
-            sensor, _ = Sensor.objects.get_or_create(topic=msg.topic, defaults={'name': msg.topic})
+                close_old_connections()
+                # 建立感測器記錄
+                sensor, _ = Sensor.objects.get_or_create(topic=msg.topic, defaults={'name': msg.topic})
+            
+                # 直接把 payload 塞進去 (value 欄位現在是 TextField)
+                SensorReading.objects.create(sensor=sensor, value=payload)
         
-            # 直接把 payload 塞進去 (value 欄位現在是 TextField)
-            SensorReading.objects.create(sensor=sensor, value=payload)
-        
-        except Exception as e:
-            print(f"❌ 錯誤: {e}")
-            return
+            except Exception as e:
+                print(f"❌ 錯誤: {e}")
+                return
 
         def mqtt_thread():
             client = mqtt.Client()
