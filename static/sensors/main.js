@@ -8,6 +8,14 @@ async function fetchLatest(){
     const r = await fetch('/api/latest/');
     const j = await r.json();
     latestEl.innerHTML = '';
+    if (j.error) {
+      latestEl.innerHTML = `<div style="color: #ef4444; font-weight: 500;">資料庫錯誤: ${j.error}</div>`;
+      return;
+    }
+    if (!j.results || j.results.length === 0) {
+      latestEl.innerHTML = `<div style="color: #6b7280; font-weight: 500;">無感測器資料</div>`;
+      return;
+    }
     j.results.forEach(s =>{
       const d = document.createElement('div'); d.className='item';
       d.innerText = `${s.name}: ${s.value} ${s.unit||''}`;
@@ -15,6 +23,7 @@ async function fetchLatest(){
     });
   } catch (err) {
     console.error('Error fetching latest values:', err);
+    latestEl.innerHTML = `<div style="color: #ef4444; font-weight: 500;">無法連線至 API</div>`;
   }
 }
 
@@ -23,6 +32,10 @@ async function fetchHistory(sensor_id){
   try {
     const r = await fetch(`/api/history/?sensor_id=${sensor_id}&limit=200`);
     const j = await r.json();
+    if (j.error) {
+      console.error('Error fetching history:', j.error);
+      return;
+    }
     const labels = j.data.map(p => new Date(p.timestamp).toLocaleTimeString());
     const values = j.data.map(p => p.value);
     renderChart(labels, values);
@@ -37,6 +50,14 @@ async function renderRaw(sensor_id){
     const r = await fetch(`/api/raw/?sensor_id=${sensor_id}&per=25`);
     const j = await r.json();
     rawTbody.innerHTML = '';
+    if (j.error) {
+      rawTbody.innerHTML = `<tr><td colspan="3" style="color: #ef4444; text-align: center; font-weight: 500; padding: 15px;">資料庫錯誤: ${j.error}</td></tr>`;
+      return;
+    }
+    if (!j.results || j.results.length === 0) {
+      rawTbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #6b7280; padding: 15px;">暫無資料</td></tr>`;
+      return;
+    }
     j.results.forEach(row =>{
       const tr = document.createElement('tr');
       tr.innerHTML = `<td>${row.id}</td><td>${row.value}</td><td>${new Date(row.timestamp).toLocaleString()}</td>`;
@@ -44,6 +65,7 @@ async function renderRaw(sensor_id){
     });
   } catch (err) {
     console.error('Error rendering raw data:', err);
+    rawTbody.innerHTML = `<tr><td colspan="3" style="color: #ef4444; text-align: center; font-weight: 500; padding: 15px;">無法連線至 API</td></tr>`;
   }
 }
 
