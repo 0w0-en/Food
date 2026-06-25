@@ -101,3 +101,7 @@ LOGGING = {
     },
 }
 
+import logging
+logging.getLogger('django.server').setLevel(logging.WARNING)
+
+
