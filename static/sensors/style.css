@@ -122,7 +122,7 @@ h1, h2, h3, .page-header h1, .page-header .title-left h1, .page-header .title-le
   margin: 0 auto; 
   padding: 18px;
   border-radius: 14px;
-  background: #e8d8ff; /* 👈 統一亮嫩紫色 */
+  background: rgba(232, 216, 255, 0.5);
   box-shadow: 0 6px 20px rgba(76, 29, 149, 0.05);
   border: 1px solid rgba(76, 29, 149, 0.08);
   box-sizing: border-box; 
@@ -199,7 +199,7 @@ table tbody tr:hover {
    原始資料與 Pi 資料面板專屬設定（滾動條與欄寬）
    ========================================================================== */
 .panel.raw, .panel.pi-data {
-  background: #e8d8ff; /* 確保兩個資料底色都是純嫩紫 */
+  background: rgba(232, 216, 255, 0.5);
   max-height: 400px;
   overflow-y: auto;
 }
