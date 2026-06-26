@@ -47,10 +47,25 @@ async function fetchLatest() {
     try {
         const res = await fetch('/api/latest/');
         const data = await res.json();
+        
         if (data.results) {
-            latestEl.innerHTML = data.results.map(s => `
-                <div class="item"><strong>${s.name}</strong>: ${s.value}</div>
-            `).join('');
+            latestEl.innerHTML = ''; // 清空舊資料
+            data.results.forEach(s => {
+                let parsedValue;
+                try {
+                    // 嘗試解析字串為物件
+                    parsedValue = typeof s.value === 'string' ? JSON.parse(s.value) : s.value;
+                } catch(e) { parsedValue = s.value; }
+
+                // 如果是物件，展開顯示；如果不是，直接顯示
+                if (parsedValue !== null && typeof parsedValue === 'object' && !Array.isArray(parsedValue)) {
+                    Object.entries(parsedValue).forEach(([k, v]) => {
+                        latestEl.innerHTML += `<div class="item"><strong>${k}</strong>: ${JSON.stringify(v)}</div>`;
+                    });
+                } else {
+                    latestEl.innerHTML += `<div class="item"><strong>${s.name}</strong>: ${parsedValue}</div>`;
+                }
+            });
         }
     } catch (err) { console.error('Fetch Latest Error:', err); }
 }
@@ -93,17 +108,42 @@ async function fetchRawData(sensorId) {
     const tbody = document.querySelector('#raw-table tbody');
     if (!tbody) return;
     try {
-        const res = await fetch(`/api/raw/?sensor_id=${sensorId}&limit=10`);
+        // API 呼叫時 limit=2，讓後端直接只給 2 筆
+        const res = await fetch(`/api/raw/?sensor_id=${sensorId}&limit=2`);
         const j = await res.json();
+        
         if (j.results) {
-            tbody.innerHTML = j.results.map(r => `
-                <tr>
-                    <td>${r.id}</td>
-                    <td>${r.topic}</td>
-                    <td>${r.value}</td>
-                    <td>${r.timestamp}</td>
-                </tr>
-            `).join('');
+            let rowsHtml = '';
+            
+            // 使用 slice(0, 2) 確保前端處理的絕對是前 2 筆
+            j.results.slice(0, 2).forEach(r => {
+                let valObj;
+                try {
+                    valObj = typeof r.value === 'string' ? JSON.parse(r.value) : r.value;
+                } catch (e) { valObj = r.value; }
+
+                // 處理 JSON 物件拆解
+                if (valObj !== null && typeof valObj === 'object' && !Array.isArray(valObj)) {
+                    Object.entries(valObj).forEach(([key, val]) => {
+                        rowsHtml += `
+                            <tr>
+                                <td>${r.id}</td>
+                                <td>${key}</td>
+                                <td>${Array.isArray(val) ? JSON.stringify(val) : val}</td>
+                                <td>${r.timestamp}</td>
+                            </tr>`;
+                    });
+                } else {
+                    rowsHtml += `
+                        <tr>
+                            <td>${r.id}</td>
+                            <td>${r.topic || 'N/A'}</td>
+                            <td>${valObj}</td>
+                            <td>${r.timestamp}</td>
+                        </tr>`;
+                }
+            });
+            tbody.innerHTML = rowsHtml;
         }
     } catch (err) { console.error('Fetch Raw Data Error:', err); }
 }
