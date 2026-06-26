@@ -3,70 +3,26 @@ let currentSensorId = null;
 let myChart = null; // 用於儲存圖表實例，避免重複繪圖報錯
 
 document.addEventListener('DOMContentLoaded', () => {
-    const sidebar = document.getElementById('sidebar');
+    // 1. 頁面載入時：一次抓取所有數據 (初始化)
     fetchLatest();
-    // 1. 漢堡選單控制
-    document.getElementById('menu-toggle')?.addEventListener('click', () => {
-        sidebar.classList.add('active');
-    });
-    document.getElementById('menu-close')?.addEventListener('click', () => {
-        sidebar.classList.remove('active');
-    });
+    
+    // 如果你有預設的 sensorId (例如從 template 帶入)，請在這裡呼叫
+    const defaultSensorId = '{{ sensors.0.id }}'; // 假設使用 Django 模板語法抓第一個 ID
+    if (defaultSensorId) {
+        fetchChartData(defaultSensorId);
+        fetchRawData(defaultSensorId);
+    }
 
-    // 2. [導航選單] 切換面板邏輯 (對應 HTML 的 #nav-menu)
-    // 修改導航選單的邏輯，加入 Resize 處理
-    document.querySelectorAll('#nav-menu li').forEach(item => {
-        item.addEventListener('click', () => {
-            const targetId = item.getAttribute('data-target');
-            
-            // 1. 隱藏所有面板
-            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-            
-            // 2. 顯示目標面板
-            const targetPanel = document.getElementById(targetId);
-            targetPanel?.classList.add('active');
-            
-            // 3. 核心關鍵：如果選的是圖表區塊，強制讓 Chart.js 重新調整大小
-            if (targetId === 'panel-chart' && typeof myChart !== 'undefined') {
-                myChart.resize(); 
-            }
-            
-            document.getElementById('sidebar').classList.remove('active');
-        });
-    });
-
-    // 3. [感測器選單] 切換資料邏輯 (對應 HTML 的 #sensor-menu)
-    document.querySelectorAll('#sensor-menu li').forEach(item => {
-        item.addEventListener('click', () => {
-            currentSensorId = item.getAttribute('data-sensor-id');
-            
-            // 執行資料抓取
-            if (currentSensorId) {
-                fetchChartData(currentSensorId);
-                fetchRawData(currentSensorId);
-                
-                // 自動跳轉到圖表頁面（假設它是你最常用的功能）
-                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-                document.getElementById('panel-chart')?.classList.add('active');
-            }
-            
-            sidebar.classList.remove('active');
-        });
-    });
-
-    // 4. 初始化與自動更新
-    // 調整你的自動更新邏輯
+    // 2. 背景持續更新：全部一起更新
     setInterval(() => {
-        // 即時數值：每個頁面都要用
-        fetchLatest();
+        fetchLatest(); // 更新即時數值
         
-        // 如果有選定感測器，確保圖表與原始資料都有更新
-        // 即使面板被隱藏，資料依然在背景更新，這樣切換過去時就會有最新資料
-        if (currentSensorId) {
+        // 確保如果目前有選定感測器，也同時更新圖表與原始資料
+        if (typeof currentSensorId !== 'undefined' && currentSensorId) {
             fetchChartData(currentSensorId);
             fetchRawData(currentSensorId);
         }
-    }, 500); // 改回 3 秒，保護 API
+    }, 500); 
 });
 
 // --- 功能函式 ---

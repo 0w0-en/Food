@@ -126,19 +126,21 @@ h1, h2, h3, .page-header h1, .page-header .title-left h1, .page-header .title-le
 /* ==========================================================================
    數據面板基礎設定
    ========================================================================== */
+/* 修改前：預設隱藏 */
+/* .panel { display: none; } */
+
+/* 修改後：預設顯示 */
 .panel {
-  width: 100%;
-  max-width: 1000px;
-  margin: 0 auto; 
-  padding: 18px;
-  border-radius: 14px;
-  background: rgba(232, 216, 255, 0.1);
-  box-shadow: 0 6px 20px rgba(76, 29, 149, 0.05);
-  border: 1px solid rgba(76, 29, 149, 0.08);
-  box-sizing: border-box; 
-  
-  /* 新增：預設隱藏所有面板 */
-  display: none; 
+    display: block;        /* 確保它們全部顯示 */
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto 20px;   /* 增加下方的間距 */
+    padding: 18px;
+    border-radius: 14px;
+    background: rgba(232, 216, 255, 0.1);
+    box-shadow: 0 6px 20px rgba(76, 29, 149, 0.05);
+    border: 1px solid rgba(76, 29, 149, 0.08);
+    box-sizing: border-box; 
 }
 
 /* 顯示當前選中的面板 */
