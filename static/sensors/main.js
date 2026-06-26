@@ -4,7 +4,7 @@ let myChart = null; // 用於儲存圖表實例，避免重複繪圖報錯
 
 document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.getElementById('sidebar');
-
+    fetchLatest();
     // 1. 漢堡選單控制
     document.getElementById('menu-toggle')?.addEventListener('click', () => {
         sidebar.classList.add('active');
@@ -14,16 +14,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 2. [導航選單] 切換面板邏輯 (對應 HTML 的 #nav-menu)
+    // 修改導航選單的邏輯，加入 Resize 處理
     document.querySelectorAll('#nav-menu li').forEach(item => {
         item.addEventListener('click', () => {
             const targetId = item.getAttribute('data-target');
-            if (!targetId) return;
-
-            // 隱藏所有面板，顯示目標面板
-            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-            document.getElementById(targetId)?.classList.add('active');
             
-            sidebar.classList.remove('active');
+            // 1. 隱藏所有面板
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            
+            // 2. 顯示目標面板
+            const targetPanel = document.getElementById(targetId);
+            targetPanel?.classList.add('active');
+            
+            // 3. 核心關鍵：如果選的是圖表區塊，強制讓 Chart.js 重新調整大小
+            if (targetId === 'panel-chart' && typeof myChart !== 'undefined') {
+                myChart.resize(); 
+            }
+            
+            document.getElementById('sidebar').classList.remove('active');
         });
     });
 
@@ -47,15 +55,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 4. 初始化與自動更新
-    fetchLatest();
-    // ⚠️ 警告：500ms (0.5秒) 對於後端 API 請求太頻繁了，建議改回 3000ms (3秒)
+    // 調整你的自動更新邏輯
     setInterval(() => {
+        // 即時數值：每個頁面都要用
         fetchLatest();
+        
+        // 如果有選定感測器，確保圖表與原始資料都有更新
+        // 即使面板被隱藏，資料依然在背景更新，這樣切換過去時就會有最新資料
         if (currentSensorId) {
             fetchChartData(currentSensorId);
             fetchRawData(currentSensorId);
         }
-    }, 500); 
+    }, 500); // 改回 3 秒，保護 API
 });
 
 // --- 功能函式 ---
