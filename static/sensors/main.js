@@ -1,107 +1,218 @@
-// 全域變數
+// --- 全域變數 ---
 let currentSensorId = null;
-let myChart = null; // 用來存放 Chart.js 實例
+let myChart = null; // 用於儲存圖表實例，避免重複繪圖報錯
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. 初始化設定：抓取第一個感測器作為預設值
-    const firstSensor = document.querySelector('#sensor-menu li');
-    if (firstSensor) {
-        currentSensorId = firstSensor.getAttribute('data-sensor-id');
-        firstSensor.classList.add('selected'); // 給予高亮
+    // 1. 頁面載入時：一次抓取所有數據 (初始化)
+    fetchLatest();
+    
+    // 如果你有預設的 sensorId (例如從 template 帶入)，請在這裡呼叫
+    const defaultSensorId = '{{ sensors.0.id }}'; // 假設使用 Django 模板語法抓第一個 ID
+    if (defaultSensorId) {
+        fetchChartData(defaultSensorId);
+        fetchRawData(defaultSensorId);
     }
 
-    // 2. 漢堡選單邏輯
-    const sidebar = document.getElementById('sidebar');
-    document.getElementById('menu-toggle')?.addEventListener('click', () => sidebar.classList.add('active'));
-    document.getElementById('menu-close')?.addEventListener('click', () => sidebar.classList.remove('active'));
-
-    // 3. 導航選單 (Nav-Menu) -> 平滑捲動
-    document.querySelectorAll('#nav-menu li').forEach(item => {
-        item.addEventListener('click', () => {
-            const targetId = item.getAttribute('data-target');
-            document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
-            sidebar.classList.remove('active');
-        });
-    });
-
-    // 4. 感測器選單 (Sensor-Menu) -> 更新資料 + 高亮
-    document.querySelectorAll('#sensor-menu li').forEach(item => {
-        item.addEventListener('click', () => {
-            // UI 更新
-            document.querySelectorAll('#sensor-menu li').forEach(li => li.classList.remove('selected'));
-            item.classList.add('selected');
-            
-            // 資料更新
-            currentSensorId = item.getAttribute('data-sensor-id');
+    // 2. 背景持續更新：全部一起更新
+    setInterval(() => {
+        fetchLatest(); // 更新即時數值
+        
+        // 確保如果目前有選定感測器，也同時更新圖表與原始資料
+        if (typeof currentSensorId !== 'undefined' && currentSensorId) {
             fetchChartData(currentSensorId);
             fetchRawData(currentSensorId);
-            
-            // 互動反饋
-            document.getElementById('panel-chart')?.scrollIntoView({ behavior: 'smooth' });
-            sidebar.classList.remove('active');
-        });
-    });
-
-    // 5. 立即執行：初始化所有資料
-    fetchAllData();
-
-    // 6. 背景自動更新 (每 3 秒)
-    setInterval(fetchAllData, 3000);
+        }
+    }, 500); 
 });
 
-// --- 功能函數 ---
+// 1. 導航選單 (nav-menu) -> 改為捲動到指定區塊
+document.querySelectorAll('#nav-menu li').forEach(item => {
+    item.addEventListener('click', () => {
+        const targetId = item.getAttribute('data-target');
+        const targetPanel = document.getElementById(targetId);
+        
+        if (targetPanel) {
+            // 平滑捲動到該位置
+            targetPanel.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // 關閉側欄
+        document.getElementById('sidebar').classList.remove('active');
+    });
+});
 
-async function fetchAllData() {
-    fetchLatest(); // 總是更新即時數值
-    if (currentSensorId) {
-        fetchChartData(currentSensorId);
-        fetchRawData(currentSensorId);
-    }
-}
+// 2. 感測器選單 (sensor-menu) -> 抓資料 + 高亮選中狀態
+document.querySelectorAll('#sensor-menu li').forEach(item => {
+    item.addEventListener('click', () => {
+        // 先移除所有選單的 selected class
+        document.querySelectorAll('#sensor-menu li').forEach(li => li.classList.remove('selected'));
+        // 加上 selected class
+        item.classList.add('selected');
 
+        const sensorId = item.getAttribute('data-sensor-id');
+        currentSensorId = sensorId; 
+        
+        // 抓取資料
+        fetchChartData(sensorId);
+        fetchRawData(sensorId);
+        
+        // 可選：選取感測器後自動捲動到圖表區
+        document.getElementById('panel-chart').scrollIntoView({ behavior: 'smooth' });
+        
+        document.getElementById('sidebar').classList.remove('active');
+    });
+});
+// --- 功能函式 ---
+
+// A. 更新即時數值
 async function fetchLatest() {
-    const container = document.getElementById('latest-values');
-    if(!container) return;
+    const latestEl = document.getElementById('latest-values');
+    if (!latestEl) return;
     try {
         const res = await fetch('/api/latest/');
         const data = await res.json();
-        container.innerHTML = data.results.map(s => `
-            <div class="item"><strong>${s.name}</strong>: ${s.value}</div>
-        `).join('');
-    } catch (e) { console.error("Latest fetch error", e); }
-}
-
-async function fetchChartData(sensorId) {
-    try {
-        const res = await fetch(`/api/chart/?sensor_id=${sensorId}`);
-        const data = await res.json();
-        // 這裡請確保你的圖表初始化邏輯正確，如果 myChart 不存在需建立
-        if (myChart) {
-            myChart.data.labels = data.labels;
-            myChart.data.datasets[0].data = data.values;
-            myChart.update();
-        }
-    } catch (e) { console.error("Chart fetch error", e); }
-}
-
-async function fetchRawData(sensorId) {
-    const container = document.querySelector('#raw-table tbody');
-    if (!container) return;
-    try {
-        const res = await fetch(`/api/raw/?sensor_id=${sensorId}`);
-        const j = await res.json();
         
-        // 分組邏輯
-        const groups = {};
-        j.results.forEach(item => {
-            if (!groups[item.topic]) groups[item.topic] = [];
-            if (groups[item.topic].length < 5) groups[item.topic].push(item);
+        if (data.results) {
+            // 清空目前的內容
+            latestEl.innerHTML = '';
+            
+            data.results.forEach(s => {
+                // 嘗試解析值 (假設 s.value 是 JSON 字串)
+                let parsedValue;
+                try {
+                    parsedValue = typeof s.value === 'string' ? JSON.parse(s.value) : s.value;
+                } catch (e) {
+                    parsedValue = s.value;
+                }
+
+                // 檢查是否為物件，若是則逐行拆解，否則直接顯示
+                if (parsedValue && typeof parsedValue === 'object') {
+                    Object.entries(parsedValue).forEach(([key, val]) => {
+                        const div = document.createElement('div');
+                        div.className = 'item';
+                        // 這裡定義你想呈現的格式
+                        div.innerHTML = `<strong>"${key}"</strong>: ${JSON.stringify(val)}`;
+                        latestEl.appendChild(div);
+                    });
+                } else {
+                    const div = document.createElement('div');
+                    div.className = 'item';
+                    div.innerHTML = `<strong>${s.name}</strong>: ${parsedValue}`;
+                    latestEl.appendChild(div);
+                }
+            });
+        }
+    } catch (err) { console.error('Fetch Latest Error:', err); }
+}
+
+// B. 更新折線圖
+async function fetchChartData(sensorId) {
+    if (!sensorId) return;
+    try {
+        const res = await fetch(`/api/history/?sensor_id=${sensorId}&limit=50`);
+        const j = await res.json();
+        const container = document.getElementById('charts-container');
+        
+        if (!j.data || j.data.length === 0) return;
+
+        // 1. 處理資料：解析 JSON 並取出 mod3_freq
+        const processedData = j.data.map(item => {
+            let valObj;
+            try {
+                // 如果 value 是字串，先轉成物件
+                valObj = typeof item.value === 'string' ? JSON.parse(item.value) : item.value;
+            } catch (e) {
+                valObj = {};
+            }
+            
+            return {
+                timestamp: item.timestamp.substring(11, 16), // 保留 HH:mm
+                // 若 mod3_freq 不存在，給予 0 或 null
+                value: valObj.mod3_freq !== undefined ? valObj.mod3_freq : null 
+            };
         });
 
-        // 渲染
-        container.innerHTML = Object.entries(groups).map(([topic, items]) => `
-            <tr><td colspan="4" style="background:#f0f0f0; font-weight:bold;">Topic: ${topic}</td></tr>
-            ${items.map(i => `<tr><td>${i.id}</td><td>${topic}</td><td>${i.value}</td><td>${i.timestamp.slice(11,16)}</td></tr>`).join('')}
-        `).join('');
-    } catch (e) { console.error("Raw data fetch error", e); }
+        // 動態建立 Canvas
+        container.innerHTML = '<canvas id="myChart"></canvas>';
+        const ctx = document.getElementById('myChart').getContext('2d');
+
+        if (myChart) myChart.destroy();
+
+        // 2. 繪製新圖表 (只顯示 mod3_freq)
+        myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: processedData.map(p => p.timestamp),
+                datasets: [{ 
+                    label: 'mod3_freq', 
+                    data: processedData.map(p => p.value),
+                    borderColor: '#7c4dff',
+                    backgroundColor: 'rgba(124, 77, 255, 0.1)',
+                    fill: true,
+                    tension: 0.3 // 增加一點平滑曲線
+                }]
+            },
+            options: { 
+                responsive: true,
+                scales: {
+                    y: {
+                        min: 0,    // 設定 Y 軸最小值
+                        max: 140   // 設定 Y 軸最大值
+                    }
+                }
+            }
+        });
+    } catch (err) { console.error('Fetch Chart Error:', err); }
+}
+
+// C. 更新原始資料表格
+async function fetchRawData(sensorId) {
+    if (!sensorId) return;
+    const tbody = document.querySelector('#raw-table tbody');
+    if (!tbody) return;
+    try {
+        // 1. 在 API 請求網址中加入 &limit=10，讓後端只回傳最新的 10 筆
+        const res = await fetch(`/api/raw/?sensor_id=${sensorId}&limit=10`);
+        const j = await res.json();
+        
+        if (j.results) {
+            let rowsHtml = '';
+            
+            // 2. 使用 slice(0, 10) 作為第二層防護，確保前端最多只渲染 10 筆
+            const dataToShow = j.results.slice(0, 2);
+            
+            dataToShow.forEach(r => {
+                // 嘗試解析 JSON 字串
+                let valObj;
+                try {
+                    valObj = typeof r.value === 'string' ? JSON.parse(r.value) : r.value;
+                } catch (e) {
+                    valObj = r.value;
+                }
+
+                // 如果是物件格式，則拆解成多行；若不是，則顯示原始值
+                if (valObj && typeof valObj === 'object' && !Array.isArray(valObj)) {
+                    Object.entries(valObj).forEach(([key, val]) => {
+                        rowsHtml += `
+                            <tr>
+                                <td>${r.id}</td>
+                                <td>${key}</td>
+                                <td>${JSON.stringify(val).replace(/"/g, '')}</td>
+                                <td>${r.timestamp}</td>
+                            </tr>`;
+                    });
+                } else {
+                    // 非 JSON 格式的備用顯示
+                    rowsHtml += `
+                        <tr>
+                            <td>${r.id}</td>
+                            <td>${r.topic}</td>
+                            <td>${valObj}</td>
+                            <td>${r.timestamp}</td>
+                        </tr>`;
+                }
+            });
+            tbody.innerHTML = rowsHtml;
+        }
+    } catch (err) { console.error('Fetch Raw Data Error:', err); }
 }
