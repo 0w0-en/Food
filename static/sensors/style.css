@@ -30,6 +30,16 @@ h1, h2, h3, .page-header h1, .page-header .title-left h1, .page-header .title-le
 .bg-art{display:none}
 /* jellyfish SVGs removed */
 
+/* 強制將所有表格內的文字設為黑色，使用 !important 確保優先級最高 */
+#raw-table td, #raw-table th {
+    color: #000000 !important;
+}
+
+/* 確保數值顯示區塊的字也是黑色 */
+.latest-value-item {
+    color: #000000 !important;
+}
+
 .navbar{
   position:relative;
   z-index:2;
