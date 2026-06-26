@@ -25,6 +25,43 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 500); 
 });
 
+// 1. 導航選單 (nav-menu) -> 改為捲動到指定區塊
+document.querySelectorAll('#nav-menu li').forEach(item => {
+    item.addEventListener('click', () => {
+        const targetId = item.getAttribute('data-target');
+        const targetPanel = document.getElementById(targetId);
+        
+        if (targetPanel) {
+            // 平滑捲動到該位置
+            targetPanel.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // 關閉側欄
+        document.getElementById('sidebar').classList.remove('active');
+    });
+});
+
+// 2. 感測器選單 (sensor-menu) -> 抓資料 + 高亮選中狀態
+document.querySelectorAll('#sensor-menu li').forEach(item => {
+    item.addEventListener('click', () => {
+        // 先移除所有選單的 selected class
+        document.querySelectorAll('#sensor-menu li').forEach(li => li.classList.remove('selected'));
+        // 加上 selected class
+        item.classList.add('selected');
+
+        const sensorId = item.getAttribute('data-sensor-id');
+        currentSensorId = sensorId; 
+        
+        // 抓取資料
+        fetchChartData(sensorId);
+        fetchRawData(sensorId);
+        
+        // 可選：選取感測器後自動捲動到圖表區
+        document.getElementById('panel-chart').scrollIntoView({ behavior: 'smooth' });
+        
+        document.getElementById('sidebar').classList.remove('active');
+    });
+});
 // --- 功能函式 ---
 
 // A. 更新即時數值

@@ -143,16 +143,19 @@ h1, h2, h3, .page-header h1, .page-header .title-left h1, .page-header .title-le
     box-sizing: border-box; 
 }
 
-/* 顯示當前選中的面板 */
-.panel.active {
-  display: block;
+/* 側欄選單項目的懸停效果 */
+.sidebar-menu li:hover {
+    background-color: rgba(124, 77, 255, 0.1);
+    color: #7c4dff;
 }
 
-.sidebar-menu li.active {
-    background-color: rgba(124, 77, 255, 0.2);
-    color: #7c4dff;
-    font-weight: bold;
+/* 顯示目前正在選取的感測器 (視覺回饋) */
+.sidebar-menu li.selected {
+    border-left: 4px solid #7c4dff;
+    background-color: rgba(124, 77, 255, 0.15);
 }
+
+
 
 /* 即時數值：區塊樣式 */
 .latest-grid {
