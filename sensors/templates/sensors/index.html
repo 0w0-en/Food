@@ -19,7 +19,7 @@
       <select id="sensor-select">
         <option value="">-- 選擇感測器 --</option>
         {% for s in sensors %}
-        <option value="{{ s.id }}">{{ s.name|default:s.topic }}</option>
+        <option value="{{ s.id }}">mod3_freq</option>
         {% endfor %}
       </select>
       <div id="charts-container" style="margin-top: 20px;"></div>

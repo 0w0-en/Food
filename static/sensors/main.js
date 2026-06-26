@@ -93,27 +93,49 @@ async function fetchChartData(sensorId) {
         
         if (!j.data || j.data.length === 0) return;
 
+        // 1. 處理資料：解析 JSON 並取出 mod3_freq
+        const processedData = j.data.map(item => {
+            let valObj;
+            try {
+                // 如果 value 是字串，先轉成物件
+                valObj = typeof item.value === 'string' ? JSON.parse(item.value) : item.value;
+            } catch (e) {
+                valObj = {};
+            }
+            
+            return {
+                timestamp: item.timestamp.substring(11, 16), // 保留 HH:mm
+                // 若 mod3_freq 不存在，給予 0 或 null
+                value: valObj.mod3_freq !== undefined ? valObj.mod3_freq : null 
+            };
+        });
+
         // 動態建立 Canvas
         container.innerHTML = '<canvas id="myChart"></canvas>';
         const ctx = document.getElementById('myChart').getContext('2d');
 
-        // 銷毀舊圖表 (防止重疊與記憶體洩漏)
         if (myChart) myChart.destroy();
 
-        // 繪製新圖表
+        // 2. 繪製新圖表 (只顯示 mod3_freq)
         myChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: j.data.map(p => p.timestamp.substring(11, 16)), // 只取 HH:mm
+                labels: processedData.map(p => p.timestamp),
                 datasets: [{ 
-                    label: '數值變化', 
-                    data: j.data.map(p => p.value), 
+                    label: 'mod3_freq', 
+                    data: processedData.map(p => p.value),
                     borderColor: '#7c4dff',
                     backgroundColor: 'rgba(124, 77, 255, 0.1)',
-                    fill: true
+                    fill: true,
+                    tension: 0.3 // 增加一點平滑曲線
                 }]
             },
-            options: { responsive: true }
+            options: { 
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true } // 確保數值從 0 開始顯示，觀察變化更清楚
+                }
+            }
         });
     } catch (err) { console.error('Fetch Chart Error:', err); }
 }
