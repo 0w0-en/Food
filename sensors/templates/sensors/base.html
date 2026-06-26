@@ -20,23 +20,23 @@
 
     <main class="container">
         
-        <div class="control-panel" style="margin: 20px 0;">
-            <label for="sensor-select">選擇感測器：</label>
-            <select id="sensor-select">
-                <option value="">-- 請選擇感測器 --</option>
-                {% for s in sensors %}
-                    <option value="{{ s.id }}">{{ s.name|default:s.topic }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
         <div id="panel-latest" class="panel">
             <h2>即時數值</h2>
             <div id="latest-values" class="latest-grid"></div>
         </div>
 
         <div id="panel-chart" class="panel">
-            <h2>歷史折線圖</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2>歷史折線圖</h2>
+                
+                <select id="sensor-select" style="padding: 5px; border-radius: 5px;">
+                    <option value="">-- 選擇感測器 --</option>
+                    {% for s in sensors %}
+                        <option value="{{ s.id }}">{{ s.name|default:s.topic }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+      
             <canvas id="sensorChart"></canvas>
         </div>
 
