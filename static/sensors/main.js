@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
             fetchChartData(currentSensorId);
             fetchRawData(currentSensorId);
         }
-    }, 3000); 
+    }, 500); 
 });
 
 // --- 功能函式 (保持不動) ---
