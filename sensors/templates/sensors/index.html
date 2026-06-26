@@ -6,41 +6,32 @@
       <h1>趙翌雯</h1>
       <h2>B11313121</h2>
     </div>
-    <div class="title-right">
-      <p class="subtitle">實境解謎裝置儀表板</p>
-    </div>
   </header>
 
   <section class="panels">
-    <div class="panel realtime" id="panel-latest">
+    <div class="panel" id="panel-latest">
       <h3>即時數值</h3>
-      <div id="latest-values">Loading...</div>
-  </div>
+      <div id="latest-values">讀取中...</div>
+    </div>
 
-  <div class="panel charts" id="panel-chart">
+    <div class="panel" id="panel-chart">
       <h3>歷史折線圖</h3>
-      <div class="controls">
-          <select id="sensor-select">
-            <option value="">-- 選擇感測器 --</option>
-            {% for s in sensors %}
-            <option value="{{ s.id }}">{{ s.name|default:s.topic }}</option>
-            {% endfor %}
-          </select>
-      </div>
-      <canvas id="myChart" width="400" height="200"></canvas>
-  </div>
+      <select id="sensor-select">
+        <option value="">-- 選擇感測器 --</option>
+        {% for s in sensors %}
+        <option value="{{ s.id }}">{{ s.name|default:s.topic }}</option>
+        {% endfor %}
+      </select>
+      <div id="charts-container" style="margin-top: 20px;"></div>
+    </div>
 
-  <div class="panel raw" id="panel-raw">
+    <div class="panel" id="panel-raw">
       <h3>原始資料</h3>
       <table id="raw-table">
-          <thead>
-              <tr><th>ID</th><th>Topic</th><th>Value</th><th>Timestamp</th></tr>
-          </thead>
-          <tbody>
-              </tbody>
+        <thead><tr><th>ID</th><th>Topic</th><th>Value</th><th>Time</th></tr></thead>
+        <tbody></tbody>
       </table>
-  </div>
+    </div>
   </section>
-
-  <script src="/static/sensors/main.js"></script>
+  <script src="{% static 'sensors/main.js' %}"></script>
 {% endblock %}
