@@ -24,10 +24,17 @@
     <!-- 2. 👈 新增側邊選單本體 -->
     <div id="sidebar" class="sidebar">
       <div class="sidebar-header">
-        <h3 id="show-all-btn" style="cursor: pointer;"> 📊 顯示全部</h3>
+        <h3 id="show-all-btn" style="cursor: pointer;">📊 儀表板控制</h3>
         <button id="menu-close" class="close-btn">×</button>
       </div>
-      <ul class="sidebar-menu">
+
+      <ul class="sidebar-menu" id="nav-menu">
+        <li data-target="panel-latest">📊 即時數值</li>
+        <li data-target="panel-chart">📈 歷史折線圖</li>
+        <li data-target="panel-raw">📋 原始資料</li>
+      </ul>
+
+      <hr> <ul class="sidebar-menu" id="sensor-menu">
         {% for s in sensors %}
           <li data-sensor-id="{{ s.id }}" style="cursor: pointer;">
             {{ s.name|default:s.topic }}

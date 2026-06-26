@@ -5,7 +5,7 @@ let myChart = null; // 用於儲存圖表實例，避免重複繪圖報錯
 document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.getElementById('sidebar');
 
-    // 1. 漢堡選單控制 (開/關)
+    // 1. 漢堡選單控制
     document.getElementById('menu-toggle')?.addEventListener('click', () => {
         sidebar.classList.add('active');
     });
@@ -13,40 +13,49 @@ document.addEventListener('DOMContentLoaded', () => {
         sidebar.classList.remove('active');
     });
 
-    // 2. 側邊選單點擊邏輯 (關鍵：點擊後自動更新資料並關閉選單)
-    document.querySelectorAll('.sidebar-menu li').forEach(item => {
+    // 2. [導航選單] 切換面板邏輯 (對應 HTML 的 #nav-menu)
+    document.querySelectorAll('#nav-menu li').forEach(item => {
         item.addEventListener('click', () => {
-            const sensorId = item.getAttribute('data-sensor-id');
-            if (sensorId) {
-                currentSensorId = sensorId;
-                fetchChartData(sensorId);
-                fetchRawData(sensorId);
-                sidebar.classList.remove('active'); // 點選後關閉側欄
-            }
+            const targetId = item.getAttribute('data-target');
+            if (!targetId) return;
+
+            // 隱藏所有面板，顯示目標面板
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById(targetId)?.classList.add('active');
+            
+            sidebar.classList.remove('active');
         });
     });
 
-    // 3. 原有的感測器下拉選單邏輯
-    const sensorSelect = document.getElementById('sensor-select');
-    if (sensorSelect) {
-        sensorSelect.addEventListener('change', (e) => {
-            currentSensorId = e.target.value;
+    // 3. [感測器選單] 切換資料邏輯 (對應 HTML 的 #sensor-menu)
+    document.querySelectorAll('#sensor-menu li').forEach(item => {
+        item.addEventListener('click', () => {
+            currentSensorId = item.getAttribute('data-sensor-id');
+            
+            // 執行資料抓取
             if (currentSensorId) {
                 fetchChartData(currentSensorId);
                 fetchRawData(currentSensorId);
+                
+                // 自動跳轉到圖表頁面（假設它是你最常用的功能）
+                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                document.getElementById('panel-chart')?.classList.add('active');
             }
+            
+            sidebar.classList.remove('active');
         });
-    }
+    });
 
     // 4. 初始化與自動更新
     fetchLatest();
+    // ⚠️ 警告：500ms (0.5秒) 對於後端 API 請求太頻繁了，建議改回 3000ms (3秒)
     setInterval(() => {
         fetchLatest();
         if (currentSensorId) {
             fetchChartData(currentSensorId);
             fetchRawData(currentSensorId);
         }
-    }, 500);
+    }, 500); 
 });
 
 // --- 功能函式 ---
@@ -144,7 +153,7 @@ async function fetchChartData(sensorId) {
                 scales: {
                     y: {
                         min: 0,    // 設定 Y 軸最小值
-                        max: 150   // 設定 Y 軸最大值
+                        max: 140   // 設定 Y 軸最大值
                     }
                 }
             }
@@ -166,7 +175,7 @@ async function fetchRawData(sensorId) {
             let rowsHtml = '';
             
             // 2. 使用 slice(0, 10) 作為第二層防護，確保前端最多只渲染 10 筆
-            const dataToShow = j.results.slice(0, 10);
+            const dataToShow = j.results.slice(0, 2);
             
             dataToShow.forEach(r => {
                 // 嘗試解析 JSON 字串
