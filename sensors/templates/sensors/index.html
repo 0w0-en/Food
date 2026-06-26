@@ -12,31 +12,34 @@
   </header>
 
   <section class="panels">
-    <div class="panel realtime limit-view" id="panel-latest">
+    <div class="panel realtime" id="panel-latest">
       <h3>即時數值</h3>
       <div id="latest-values">Loading...</div>
-    </div>
+  </div>
 
-    <div class="panel charts limit-view" id="panel-chart">
+  <div class="panel charts" id="panel-chart">
       <h3>歷史折線圖</h3>
       <div class="controls">
-        <select id="sensor-select">
-          <option value="">-- 選擇感測器 --</option>
-          {% for s in sensors %}
-          <option value="{{ s.id }}">{{ s.name|default:s.topic }}</option>
-          {% endfor %}
-        </select>
+          <select id="sensor-select">
+            <option value="">-- 選擇感測器 --</option>
+            {% for s in sensors %}
+            <option value="{{ s.id }}">{{ s.name|default:s.topic }}</option>
+            {% endfor %}
+          </select>
       </div>
-      <div id="charts-container" style="display: flex; flex-direction: column; gap: 20px;"></div>
-    </div>
+      <canvas id="myChart" width="400" height="200"></canvas>
+  </div>
 
-    <div class="panel raw limit-view" id="panel-raw">
+  <div class="panel raw" id="panel-raw">
       <h3>原始資料</h3>
       <table id="raw-table">
-        <thead><tr><th>ID</th><th>Topic</th><th>Value</th><th>Timestamp</th></tr></thead>
-        <tbody></tbody>
+          <thead>
+              <tr><th>ID</th><th>Topic</th><th>Value</th><th>Timestamp</th></tr>
+          </thead>
+          <tbody>
+              </tbody>
       </table>
-    </div>
+  </div>
   </section>
 
   <script src="/static/sensors/main.js"></script>
