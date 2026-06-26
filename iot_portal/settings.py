@@ -96,6 +96,10 @@ LOGGING = {
     },
 }
 
+# 告訴 Django 信任來自代理伺服器的 HTTPS 標頭
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
+# 如果你有設定過這些，請檢查一下，通常開發時設為 False 比較不會撞牆
+# SECURE_SSL_REDIRECT = False
 
 
