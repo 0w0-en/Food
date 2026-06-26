@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
             fetchRawData(currentSensorId); // 有選感測器時，更新表格
             // 若有圖表需求，可在此處呼叫 fetchChartData(currentSensorId);
         }
-    }, 3000);
+    }, 500);
 });
 
 // --- 核心工具函式 (定義在外面) ---
