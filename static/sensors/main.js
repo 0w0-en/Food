@@ -3,8 +3,9 @@ let currentSensorId = null;
 let myChart = null; // 用於儲存圖表實例，避免重複繪圖報錯
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. 側邊選單邏輯
     const sidebar = document.getElementById('sidebar');
+
+    // 1. 漢堡選單控制 (開/關)
     document.getElementById('menu-toggle')?.addEventListener('click', () => {
         sidebar.classList.add('active');
     });
@@ -12,10 +13,20 @@ document.addEventListener('DOMContentLoaded', () => {
         sidebar.classList.remove('active');
     });
 
-    // 2. 移除所有面板的 'limit-view' 限制，確保一開始就顯示
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('limit-view'));
+    // 2. 側邊選單點擊邏輯 (關鍵：點擊後自動更新資料並關閉選單)
+    document.querySelectorAll('.sidebar-menu li').forEach(item => {
+        item.addEventListener('click', () => {
+            const sensorId = item.getAttribute('data-sensor-id');
+            if (sensorId) {
+                currentSensorId = sensorId;
+                fetchChartData(sensorId);
+                fetchRawData(sensorId);
+                sidebar.classList.remove('active'); // 點選後關閉側欄
+            }
+        });
+    });
 
-    // 3. 感測器選擇邏輯
+    // 3. 原有的感測器下拉選單邏輯
     const sensorSelect = document.getElementById('sensor-select');
     if (sensorSelect) {
         sensorSelect.addEventListener('change', (e) => {
@@ -27,17 +38,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 4. 初始載入
+    // 4. 初始化與自動更新
     fetchLatest();
-
-    // 5. 定時自動更新 (每 3 秒)
     setInterval(() => {
         fetchLatest();
         if (currentSensorId) {
             fetchChartData(currentSensorId);
             fetchRawData(currentSensorId);
         }
-    }, 3000);
+    }, 500);
 });
 
 // --- 功能函式 ---
@@ -133,7 +142,10 @@ async function fetchChartData(sensorId) {
             options: { 
                 responsive: true,
                 scales: {
-                    y: { beginAtZero: true } // 確保數值從 0 開始顯示，觀察變化更清楚
+                    y: {
+                        min: 0,    // 設定 Y 軸最小值
+                        max: 150   // 設定 Y 軸最大值
+                    }
                 }
             }
         });
@@ -146,13 +158,17 @@ async function fetchRawData(sensorId) {
     const tbody = document.querySelector('#raw-table tbody');
     if (!tbody) return;
     try {
-        const res = await fetch(`/api/raw/?sensor_id=${sensorId}`);
+        // 1. 在 API 請求網址中加入 &limit=10，讓後端只回傳最新的 10 筆
+        const res = await fetch(`/api/raw/?sensor_id=${sensorId}&limit=10`);
         const j = await res.json();
         
         if (j.results) {
             let rowsHtml = '';
             
-            j.results.forEach(r => {
+            // 2. 使用 slice(0, 10) 作為第二層防護，確保前端最多只渲染 10 筆
+            const dataToShow = j.results.slice(0, 10);
+            
+            dataToShow.forEach(r => {
                 // 嘗試解析 JSON 字串
                 let valObj;
                 try {
