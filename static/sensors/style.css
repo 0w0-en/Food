@@ -135,18 +135,21 @@ h1, h2, h3, .page-header h1, .page-header .title-left h1, .page-header .title-le
   color: #000000;
 }
 
-/* 即時數值標籤 */
+/* 讓即時數值區塊變成 2 欄或 3 欄的網格 */
 #latest-values {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 這裡設定為 2 欄，若想更擠可改為 3 */
+    gap: 15px;
+    padding: 10px;
 }
-#latest-values .item {
-  padding: 10px 14px;
-  border-radius: 10px;
-  background: linear-gradient(90deg, var(--muted), var(--primary));
-  color: #fff;
-  font-weight: 600;
+/* 設定數值顏色為黑色，增加邊框讓它看起來像卡片 */
+.item {
+    color: #000000; 
+    background-color: #f9f9f9;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-weight: bold;
 }
 
 /* 歷史折線圖選單與畫布 */
@@ -279,24 +282,19 @@ table tbody tr:hover {
   transform: scale(1.1);
 }
 
-/* 側邊選單主體（平時隱藏在螢幕左邊外面） */
+/* 確保側欄定位正確 */
 .sidebar {
-  position: fixed;
-  top: 0;
-  left: -280px; /* 寬度 250px + 陰影空間 */
-  width: 250px;
-  height: 100%;
-  background: #ffffff;
-  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08);
-  z-index: 9999; /* 確保浮在網頁最上層 */
-  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  padding: 24px 20px;
-  box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    left: -250px; /* 初始隱藏在左邊 */
+    width: 250px;
+    height: 100%;
+    background: #333;
+    transition: 0.3s;
+    z-index: 1000;
 }
-
-/* 當啟用側邊欄時，滑動到 left: 0 顯示出來 */
 .sidebar.active {
-  left: 0;
+    left: 0; /* 點擊後推出來 */
 }
 
 /* 側邊選單標頭區塊 */

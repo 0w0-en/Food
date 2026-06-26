@@ -106,10 +106,21 @@ function renderSingleChart(containerEl, canvasId, labelName, labels, data) {
       }]
     },
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: { x: { display: true }, y: { display: true } }
+    responsive: true,
+    plugins: {
+        title: {
+            display: true,
+            text: '感測器名稱：' + sensorName // 這裡顯示名稱
+        }
+    },
+    scales: {
+        y: {
+            beginAtZero: true,
+            suggestedMax: 100, // 設定一個預設的最大值
+            min: 0             // 設定最小值
+        }
     }
+}
   });
 }
 
@@ -158,18 +169,16 @@ async function loadMultipleCharts(sensorIds, sensorNames) {
   }
 }
 
-// 修改下拉選單監聽：手動切換時就單獨秀那一個，沒選就恢復多圖表
-sensorSelect.addEventListener('change', (e)=>{
-  const selectedId = e.target.value;
-  const selectedName = e.target.options[e.target.selectedIndex].text;
-  if (selectedId) {
-    currentSensorId = selectedId;
-    loadMultipleCharts([selectedId], [selectedName]);
-    renderRaw(selectedId);
-  } else {
-    currentSensorId = '';
-    loadMultipleCharts(); 
-  }
+// 在 main.js 中
+sensorSelect.addEventListener('change', (e) => {
+    const selectedId = e.target.value;
+    if (selectedId) {
+        // 呼叫更新圖表的函數 (你自己原本寫的)
+        fetchChartData(selectedId); 
+        
+        // 呼叫剛剛新增的原始資料更新函數
+        fetchRawData(selectedId); 
+    }
 });
 
 // Initial fetch (初始化抓取)
@@ -243,3 +252,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+// 在 main.js 最下方加入
+setInterval(fetchLatest, 3000); // 每 3 秒呼叫一次 fetchLatest
+
+// 將此段程式碼放入 main.js 最下方
+async function fetchRawData(sensorId) {
+    if (!sensorId) return; // 如果沒選感測器就跳過
+    try {
+        const response = await fetch(`/api/raw/?sensor_id=${sensorId}`);
+        const data = await response.json();
+        const tbody = document.querySelector('#raw-table tbody');
+        
+        if (data.error) {
+            console.error("API Error:", data.error);
+            return;
+        }
+
+        // 清空舊資料
+        tbody.innerHTML = '';
+
+        // 渲染新資料
+        data.results.forEach(row => {
+            const tr = document.createElement('tr');
+            // 注意：這裡是對應 HTML 表格的四個欄位
+            tr.innerHTML = `
+                <td style="color: black;">${row.id}</td>
+                <td style="color: black;">${row.topic}</td>
+                <td style="color: black;">${row.value}</td>
+                <td style="color: black;">${row.timestamp}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    } catch (err) {
+        console.error('Error fetching raw data:', err);
+    }
+}

@@ -42,14 +42,16 @@ def api_history(request):
 def api_raw(request):
     try:
         sensor_id = request.GET.get('sensor_id')
-        page = int(request.GET.get('page', 1))
-        per = int(request.GET.get('per', 25))
         sensor = get_object_or_404(Sensor, id=sensor_id)
-        qs = sensor.readings.all()
-        paginator = Paginator(qs, per)
-        p = paginator.get_page(page)
-        rows = [{'id': r.id, 'value': r.value, 'timestamp': r.timestamp} for r in p]
-        return JsonResponse({'results': rows, 'page': p.number, 'num_pages': paginator.num_pages})
+        # 這裡改成回傳 sensor.topic
+        rows = [{
+            'id': r.id, 
+            'topic': sensor.topic,  # 確保這裡抓取到 Topic
+            'value': r.value, 
+            'timestamp': r.timestamp.strftime('%Y-%m-%d %H:%M:%S') 
+        } for r in sensor.readings.all()[:50]]
+        
+        return JsonResponse({'results': rows})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
